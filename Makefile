@@ -1,13 +1,13 @@
 #
-# Makefile for compiling the Murphi verifier for a given protocol 
-#          from its .C file
+# MakeFILENAME for compiling the Murphi verifier for a given protocol 
+#          from its .C FILENAME
 #
 # Make sure that you set INCLUDEPATH and CXX according to your system
 #
 # Author:               Ulrich Stern
 # Version:              1
 # Creation Date:        Sat May 25 15:13:39 PDT 1996
-# Filename:             Makefile
+# FILENAMEname:             MakeFILENAME
 # History:
 #
 # Experiences compiling the Murphi verifier:
@@ -36,6 +36,7 @@
 
 # path for including mu_verifier.C etc.
 INCLUDEPATH = Murphi3.1/include
+FILENAME = msi
 
 # choice of compiler (with REQUIRED options)
 #CXX = g++ #                                 # for beet, elaines, dawns, cabbage
@@ -53,17 +54,17 @@ CFLAGS = -Wno-write-strings -m32
 
 # rules for compiling
 
-msi:	msi.C
-	${CXX} ${CFLAGS} ${OFLAGS} -o $@.out $@.C -I${INCLUDEPATH} -lm
+$(FILENAME):	$(FILENAME)_mu
+	${CXX} ${CFLAGS} ${OFLAGS} -o $@ $@.C -I${INCLUDEPATH} -lm
 
-msi.C:
-	./Murphi3.1/bin/mu msi.m
+$(FILENAME)_mu:
+	./Murphi3.1/bin/mu $(FILENAME).m
 
-msi_opt:	msi_opt.C
-	${CXX} ${CFLAGS} ${OFLAGS} -o $@.out $@.C -I${INCLUDEPATH} -lm
+opt:	opt.C
+	${CXX} ${CFLAGS} ${OFLAGS} -o $(FILENAME)_opt $(FILENAME)_opt.C -I${INCLUDEPATH} -lm
 
-msi_opt.C:
-	./Murphi3.1/bin/mu msi.m
+opt.C:
+	./Murphi3.1/bin/mu $(FILENAME)_opt.m
 
 clean:	
-	rm -rf msi.out msi.C msi_opt.out msi_opt.C
+	rm -rf $(FILENAME) $(FILENAME)_opt *.out *.C
