@@ -11,7 +11,7 @@
 #define MURPHI_VERSION "Murphi Release 3.1"
 #define MURPHI_DATE "Jan 29 1999"
 #define PROTOCOL_NAME "msi"
-#define BITS_IN_WORLD 2376
+#define BITS_IN_WORLD 3368
 #define ALIGN
 
 /********************
@@ -288,9 +288,9 @@ class mu_1_MessageType: public mu__byte
     else return ( s << "Undefined" );
   };
 
-  mu_1_MessageType (char *name, int os): mu__byte(7, 16, 4, name, os) {};
-  mu_1_MessageType (void): mu__byte(7, 16, 4) {};
-  mu_1_MessageType (int val): mu__byte(7, 16, 4, "Parameter or function result.", 0)
+  mu_1_MessageType (char *name, int os): mu__byte(7, 18, 4, name, os) {};
+  mu_1_MessageType (void): mu__byte(7, 18, 4) {};
+  mu_1_MessageType (int val): mu__byte(7, 18, 4, "Parameter or function result.", 0)
   {
      operator=(val);
   };
@@ -313,7 +313,7 @@ class mu_1_MessageType: public mu__byte
   };
 };
 
-char *mu_1_MessageType::values[] = {"GetS","GetM","PutS","PutM","Data","InvAck","PutAck","Inv","FwdGetS","FwdGetM",NULL };
+char *mu_1_MessageType::values[] = {"GetS","GetM","PutS","PutM","Data","InvAck","PutAck","FwdGetSAck","FwdGetMAck","Inv","FwdGetS","FwdGetM",NULL };
 
 /*** end of enum declaration ***/
 mu_1_MessageType mu_1_MessageType_undefined_var;
@@ -497,17 +497,17 @@ class mu_1__type_0: public mu__byte
   friend ostream& operator<< (ostream& s, mu_1__type_0& val)
   {
     if (val.defined())
-      return ( s << mu_1__type_0::values[ int(val) - 17] );
+      return ( s << mu_1__type_0::values[ int(val) - 19] );
     else return ( s << "Undefined" );
   };
 
-  mu_1__type_0 (char *name, int os): mu__byte(17, 20, 3, name, os) {};
-  mu_1__type_0 (void): mu__byte(17, 20, 3) {};
-  mu_1__type_0 (int val): mu__byte(17, 20, 3, "Parameter or function result.", 0)
+  mu_1__type_0 (char *name, int os): mu__byte(19, 25, 3, name, os) {};
+  mu_1__type_0 (void): mu__byte(19, 25, 3) {};
+  mu_1__type_0 (int val): mu__byte(19, 25, 3, "Parameter or function result.", 0)
   {
      operator=(val);
   };
-  char * Name() { return values[ value() -17]; };
+  char * Name() { return values[ value() -19]; };
   virtual void Permute(PermSet& Perm, int i);
   virtual void SimpleCanonicalize(PermSet& Perm);
   virtual void Canonicalize(PermSet& Perm);
@@ -520,13 +520,13 @@ class mu_1__type_0: public mu__byte
   virtual void print()
   {
     if (defined())
-      cout << name << ":" << values[ value() -17] << '\n';
+      cout << name << ":" << values[ value() -19] << '\n';
     else
       cout << name << ":Undefined\n";
   };
 };
 
-char *mu_1__type_0::values[] = {"Dir_M","Dir_S","Dir_I","Dir_MS_D",NULL };
+char *mu_1__type_0::values[] = {"Dir_M","Dir_S","Dir_I","Dir_MS_D","Dir_SM_A","Dir_MX_FwdGetSAck","Dir_MX_FwdGetMAck",NULL };
 
 /*** end of enum declaration ***/
 mu_1__type_0 mu_1__type_0_undefined_var;
@@ -759,6 +759,7 @@ class mu_1_DirState
   mu_1_Node mu_owner;
   mu_1_Value mu_value;
   mu_1__type_1 mu_sharers;
+  mu_1_AckCount mu_ack_cnt;
   mu_1_DirState ( char *n, int os ) { set_self(n,os); };
   mu_1_DirState ( void ) {};
 
@@ -774,6 +775,8 @@ friend int CompareWeight(mu_1_DirState& a, mu_1_DirState& b)
     if (w!=0) return w;
     w = CompareWeight(a.mu_sharers, b.mu_sharers);
     if (w!=0) return w;
+    w = CompareWeight(a.mu_ack_cnt, b.mu_ack_cnt);
+    if (w!=0) return w;
   return 0;
 }
 friend int Compare(mu_1_DirState& a, mu_1_DirState& b)
@@ -786,6 +789,8 @@ friend int Compare(mu_1_DirState& a, mu_1_DirState& b)
     w = Compare(a.mu_value, b.mu_value);
     if (w!=0) return w;
     w = Compare(a.mu_sharers, b.mu_sharers);
+    if (w!=0) return w;
+    w = Compare(a.mu_ack_cnt, b.mu_ack_cnt);
     if (w!=0) return w;
   return 0;
 }
@@ -802,6 +807,7 @@ friend int Compare(mu_1_DirState& a, mu_1_DirState& b)
     mu_owner.MultisetSort();
     mu_value.MultisetSort();
     mu_sharers.MultisetSort();
+    mu_ack_cnt.MultisetSort();
   }
   void print_statistic()
   {
@@ -809,42 +815,49 @@ friend int Compare(mu_1_DirState& a, mu_1_DirState& b)
     mu_owner.print_statistic();
     mu_value.print_statistic();
     mu_sharers.print_statistic();
+    mu_ack_cnt.print_statistic();
   }
   void clear() {
     mu_state.clear();
     mu_owner.clear();
     mu_value.clear();
     mu_sharers.clear();
+    mu_ack_cnt.clear();
  };
   void undefine() {
     mu_state.undefine();
     mu_owner.undefine();
     mu_value.undefine();
     mu_sharers.undefine();
+    mu_ack_cnt.undefine();
  };
   void reset() {
     mu_state.reset();
     mu_owner.reset();
     mu_value.reset();
     mu_sharers.reset();
+    mu_ack_cnt.reset();
  };
   void print() {
     mu_state.print();
     mu_owner.print();
     mu_value.print();
     mu_sharers.print();
+    mu_ack_cnt.print();
   };
   void print_diff(state *prevstate) {
     mu_state.print_diff(prevstate);
     mu_owner.print_diff(prevstate);
     mu_value.print_diff(prevstate);
     mu_sharers.print_diff(prevstate);
+    mu_ack_cnt.print_diff(prevstate);
   };
   void to_state(state *thestate) {
     mu_state.to_state(thestate);
     mu_owner.to_state(thestate);
     mu_value.to_state(thestate);
     mu_sharers.to_state(thestate);
+    mu_ack_cnt.to_state(thestate);
   };
 virtual bool isundefined() { Error.Error("Checking undefinedness of a non-base type"); return TRUE;}
 virtual bool ismember() { Error.Error("Checking membership for a non-base type"); return TRUE;}
@@ -853,6 +866,7 @@ virtual bool ismember() { Error.Error("Checking membership for a non-base type")
     mu_owner.value(from.mu_owner.value());
     mu_value.value(from.mu_value.value());
     mu_sharers = from.mu_sharers;
+    mu_ack_cnt.value(from.mu_ack_cnt.value());
     return *this;
   };
 };
@@ -878,6 +892,7 @@ void mu_1_DirState::set_self(char *n, int os)
   mu_owner.set_self_2(name, ".owner", os + 8 );
   mu_value.set_self_2(name, ".value", os + 16 );
   mu_sharers.set_self_2(name, ".sharers", os + 24 );
+  mu_ack_cnt.set_self_2(name, ".ack_cnt", os + 72 );
 }
 
 mu_1_DirState::~mu_1_DirState()
@@ -896,17 +911,17 @@ class mu_1__type_2: public mu__byte
   friend ostream& operator<< (ostream& s, mu_1__type_2& val)
   {
     if (val.defined())
-      return ( s << mu_1__type_2::values[ int(val) - 21] );
+      return ( s << mu_1__type_2::values[ int(val) - 26] );
     else return ( s << "Undefined" );
   };
 
-  mu_1__type_2 (char *name, int os): mu__byte(21, 31, 4, name, os) {};
-  mu_1__type_2 (void): mu__byte(21, 31, 4) {};
-  mu_1__type_2 (int val): mu__byte(21, 31, 4, "Parameter or function result.", 0)
+  mu_1__type_2 (char *name, int os): mu__byte(26, 36, 4, name, os) {};
+  mu_1__type_2 (void): mu__byte(26, 36, 4) {};
+  mu_1__type_2 (int val): mu__byte(26, 36, 4, "Parameter or function result.", 0)
   {
      operator=(val);
   };
-  char * Name() { return values[ value() -21]; };
+  char * Name() { return values[ value() -26]; };
   virtual void Permute(PermSet& Perm, int i);
   virtual void SimpleCanonicalize(PermSet& Perm);
   virtual void Canonicalize(PermSet& Perm);
@@ -919,7 +934,7 @@ class mu_1__type_2: public mu__byte
   virtual void print()
   {
     if (defined())
-      cout << name << ":" << values[ value() -21] << '\n';
+      cout << name << ":" << values[ value() -26] << '\n';
     else
       cout << name << ":Undefined\n";
   };
@@ -1181,18 +1196,18 @@ class mu_1__type_4_id: public mu__byte
   inline int operator=(int val) { return value(val); };
   inline int operator=(const mu_1__type_4_id& val) { return value(val.value()); };
   inline operator int() const { return value(); };
-  mu_1__type_4_id () : mu__byte(0,3,0) {};
-  mu_1__type_4_id (int val) : mu__byte(0,3,0, "Parameter or function result.",0) {operator=(val); };
+  mu_1__type_4_id () : mu__byte(0,6,0) {};
+  mu_1__type_4_id (int val) : mu__byte(0,6,0, "Parameter or function result.",0) {operator=(val); };
   char * Name() { return tsprintf("%d", value()); };
 };
 class mu_1__type_4
 {
  public:
-  mu_1_Message array[ 4 ];
+  mu_1_Message array[ 7 ];
   int max_size;
   int current_size;
  public:
-  mu_0_boolean valid[ 4 ];
+  mu_0_boolean valid[ 7 ];
   char *name;
   char longname[BUFFER_SIZE/4];
   void set_self( char *n, int os);
@@ -1203,7 +1218,7 @@ class mu_1__type_4
   virtual ~mu_1__type_4 ();
   mu_1_Message& operator[] (int index) /* const */
   {
-    if ((index >= 0) && (index <= 3) && valid[index].value())
+    if ((index >= 0) && (index <= 6) && valid[index].value())
       return array[ index ];
     else {
       Error.Error("Internal Error::%d not in index range of %s.", index, name);
@@ -1212,7 +1227,7 @@ class mu_1__type_4
   };
   mu_1__type_4& operator= (const mu_1__type_4& from)
   {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 7; i++)
     {
        array[i] = from.array[i];
        valid[i].value(from.valid[i].value());
@@ -1228,7 +1243,7 @@ friend int CompareWeight(mu_1__type_4& a, mu_1__type_4& b)
 friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
   {
     int w;
-    for (int i=0; i<4; i++) {
+    for (int i=0; i<7; i++) {
       w = Compare(a.array[i], b.array[i]);
       if (w!=0) return w;
     }
@@ -1241,15 +1256,15 @@ friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
   virtual void ArrayLimit(PermSet& Perm);
   virtual void Limit(PermSet& Perm);
   virtual void MultisetLimit(PermSet& Perm);
-  void clear() { for (int i = 0; i < 4; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
+  void clear() { for (int i = 0; i < 7; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
 
-  void undefine() { for (int i = 0; i < 4; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
+  void undefine() { for (int i = 0; i < 7; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
 
-  void reset() { for (int i = 0; i < 4; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
+  void reset() { for (int i = 0; i < 7; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
 
   void to_state(state *thestate)
   {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 7; i++)
      {
        array[i].to_state(thestate);
        valid[i].to_state(thestate);
@@ -1258,7 +1273,7 @@ friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
 
   int get_current_size() const  {
     int tmp = 0;
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 7; i++)
       if (valid[i].value()) tmp++;
     return tmp;
   };
@@ -1266,7 +1281,7 @@ friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
    void update_size()
   {
     current_size = 0;
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 7; i++)
       if (valid[i].value()) current_size++;
     if (max_size<current_size) max_size = current_size;
   };
@@ -1275,7 +1290,7 @@ friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
   { return valid[(int)id].value(); }
   void print()
   {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 7; i++)
       if (valid[i].value())
         array[i].print();
   };
@@ -1290,7 +1305,7 @@ friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
     bool prevvalid;
     static state temp;
     StateCopy(&temp, workingstate);
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 7; i++)
       {
         StateCopy(workingstate, prevstate);
         prevvalid = valid[i].value();
@@ -1306,9 +1321,9 @@ friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
   int multisetadd(const mu_1_Message &element)
   {
     update_size();
-    if (current_size >= 4) Error.Error("Maximum size of MultiSet (%s) exceeded.",name);
+    if (current_size >= 7) Error.Error("Maximum size of MultiSet (%s) exceeded.",name);
     int i;
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 7; i++)
       if (!valid[i].value())
         {
           array[i] = element;
@@ -1332,7 +1347,7 @@ friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
 
     // compact
     int i,j;
-    for (i = 0, j = 0; i < 4; i++)
+    for (i = 0, j = 0; i < 7; i++)
       if (valid[i].value())
         {
           if (j!=i)
@@ -1341,11 +1356,11 @@ friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
             j++;
         }
     if (j != current_size) current_size = j;
-    for (i = j; i < 4; i++)
+    for (i = j; i < 7; i++)
       array[i].undefine();
     for (i = 0; i < j; i++)
       valid[i].value(TRUE);
-    for (i = j; i < 4; i++)
+    for (i = j; i < 7; i++)
       valid[i].value(FALSE);
 
     // bubble sort
@@ -1378,10 +1393,10 @@ void mu_1__type_4::set_self( char *n, int os)
 {
   int i,k;
   name = n;
-  for(i = 0; i < 4; i++)
+  for(i = 0; i < 7; i++)
     array[i].set_self(tsprintf("%s{%d}", n,i), i * 72 + os);
   k = os + i * 72;
-  for(i = 0; i < 4; i++)
+  for(i = 0; i < 7; i++)
     valid[i].set_self("", i * 8 + k);
 };
 mu_1__type_4::~mu_1__type_4()
@@ -1494,10 +1509,10 @@ void mu_1__type_5::set_self( char *n, int os)
   {
     int i=0;
     name = n;
-array[i].set_self_ar(n,"Directory", i * 320 + os);i++;
-array[i].set_self_ar(n,"Proc_1", i * 320 + os);i++;
-array[i].set_self_ar(n,"Proc_2", i * 320 + os);i++;
-array[i].set_self_ar(n,"Proc_3", i * 320 + os);i++;
+array[i].set_self_ar(n,"Directory", i * 560 + os);i++;
+array[i].set_self_ar(n,"Proc_1", i * 560 + os);i++;
+array[i].set_self_ar(n,"Proc_2", i * 560 + os);i++;
+array[i].set_self_ar(n,"Proc_3", i * 560 + os);i++;
 }
 mu_1__type_5::~mu_1__type_5()
 {
@@ -1776,7 +1791,7 @@ const int mu_NumVCs = 3;
 const int mu_RequestChannel = 0;
 const int mu_ForwardChannel = 1;
 const int mu_ResponseChannel = 2;
-const int mu_NetMax = 4;
+const int mu_NetMax = 7;
 const int mu_Proc_1 = 1;
 const int mu_Proc_2 = 2;
 const int mu_Proc_3 = 3;
@@ -1790,41 +1805,46 @@ const int mu_PutM = 10;
 const int mu_Data = 11;
 const int mu_InvAck = 12;
 const int mu_PutAck = 13;
-const int mu_Inv = 14;
-const int mu_FwdGetS = 15;
-const int mu_FwdGetM = 16;
-const int mu_Dir_M = 17;
-const int mu_Dir_S = 18;
-const int mu_Dir_I = 19;
-const int mu_Dir_MS_D = 20;
-const int mu_Proc_M = 21;
-const int mu_Proc_S = 22;
-const int mu_Proc_I = 23;
-const int mu_Proc_IS_D = 24;
-const int mu_Proc_IM_A = 25;
-const int mu_Proc_IM_AD = 26;
-const int mu_Proc_II_A = 27;
-const int mu_Proc_SM_A = 28;
-const int mu_Proc_SM_AD = 29;
-const int mu_Proc_SI_A = 30;
-const int mu_Proc_MI_A = 31;
+const int mu_FwdGetSAck = 14;
+const int mu_FwdGetMAck = 15;
+const int mu_Inv = 16;
+const int mu_FwdGetS = 17;
+const int mu_FwdGetM = 18;
+const int mu_Dir_M = 19;
+const int mu_Dir_S = 20;
+const int mu_Dir_I = 21;
+const int mu_Dir_MS_D = 22;
+const int mu_Dir_SM_A = 23;
+const int mu_Dir_MX_FwdGetSAck = 24;
+const int mu_Dir_MX_FwdGetMAck = 25;
+const int mu_Proc_M = 26;
+const int mu_Proc_S = 27;
+const int mu_Proc_I = 28;
+const int mu_Proc_IS_D = 29;
+const int mu_Proc_IM_A = 30;
+const int mu_Proc_IM_AD = 31;
+const int mu_Proc_II_A = 32;
+const int mu_Proc_SM_A = 33;
+const int mu_Proc_SM_AD = 34;
+const int mu_Proc_SI_A = 35;
+const int mu_Proc_MI_A = 36;
 /*** Variable declaration ***/
 mu_1_DirState mu_DirNode("DirNode",0);
 
 /*** Variable declaration ***/
-mu_1__type_3 mu_Procs("Procs",72);
+mu_1__type_3 mu_Procs("Procs",104);
 
 /*** Variable declaration ***/
-mu_1__type_5 mu_Net("Net",216);
+mu_1__type_5 mu_Net("Net",248);
 
 /*** Variable declaration ***/
-mu_1__type_7 mu_InBox("InBox",1496);
+mu_1__type_7 mu_InBox("InBox",2488);
 
 /*** Variable declaration ***/
-mu_0_boolean mu_msg_processed("msg_processed",2360);
+mu_0_boolean mu_msg_processed("msg_processed",3352);
 
 /*** Variable declaration ***/
-mu_1_Value mu_LastWrite("LastWrite",2368);
+mu_1_Value mu_LastWrite("LastWrite",3360);
 
 void mu_Send(const mu_1_MessageType& mu_mtype, const mu_1_Node& mu_dst, const mu_1_Node& mu_src, const mu_1_VCType& mu_vc, const mu_1_Value& mu_value, const mu_1_Node& mu_fwd_to, const mu_1_AckCount& mu_ack_cnt)
 {
@@ -1841,7 +1861,7 @@ mu_1_Message mu_msg("msg",0);
         {
           if ( mu_true ) mu__intexpr9++;
         }
-      if (mu_i == 4-1) break;
+      if (mu_i == 7-1) break;
     }
   }
 /*** end multisetcount 0 declaration ***/
@@ -1877,19 +1897,31 @@ mu_Net[mu_dst].multisetadd(mu_msg);
 void mu_ErrorUnhandledMsg(mu_1_Message& mu_msg, const mu_1_Node& mu_n)
 {
 cout << "\n====================Error Msg====================\n";
-mu_DirNode.mu_state.print();
-cout << "src: ";
-cout << ( mu_msg.mu_src );
-cout << "\n";
 cout << "mtype: ";
 cout << ( mu_msg.mu_mtype );
 cout << "\n";
+cout << "src: ";
+cout << ( mu_msg.mu_src );
+cout << "\n";
+cout << "src_state: ";
+if ( (mu_msg.mu_src>=1 && mu_msg.mu_src<=3) )
+{
+mu_Procs[mu_msg.mu_src].mu_state.print();
+}
+else
+{
+mu_DirNode.mu_state.print();
+}
+cout << "dst_state: ";
 if ( (mu_n>=1 && mu_n<=3) )
 {
-cout << "dst_state: ";
 mu_Procs[mu_n].mu_state.print();
-cout << "\n";
 }
+else
+{
+mu_DirNode.mu_state.print();
+}
+cout << "\n";
 Error.Error("Error: Unhandled message type!");
 };
 /*** end procedure declaration ***/
@@ -2053,7 +2085,7 @@ mu_AddToSharersList ( mu_msg.mu_src );
 mu_Send ( mu_Data, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_DirNode.mu_value, mu_1_Node_undefined_var, 0 );
 break;
 case mu_GetM:
-mu_DirNode.mu_state = mu_Dir_M;
+mu_DirNode.mu_state = mu_Dir_SM_A;
 if ( mu_IsSharer( mu_msg.mu_src ) )
 {
 mu_Send ( mu_Data, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_DirNode.mu_value, mu_1_Node_undefined_var, (mu_cnt) - (1) );
@@ -2089,13 +2121,14 @@ break;
 case mu_Dir_M:
 switch ((int) mu_msg.mu_mtype) {
 case mu_GetS:
-mu_DirNode.mu_state = mu_Dir_MS_D;
+mu_DirNode.mu_state = mu_Dir_MX_FwdGetSAck;
 mu_Send ( mu_FwdGetS, mu_DirNode.mu_owner, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_msg.mu_src, 0 );
 mu_AddToSharersList ( mu_msg.mu_src );
 mu_AddToSharersList ( mu_DirNode.mu_owner );
 mu_DirNode.mu_owner = mu_Directory;
 break;
 case mu_GetM:
+mu_DirNode.mu_state = mu_Dir_MX_FwdGetMAck;
 mu_DirNode.mu_value = mu_msg.mu_value;
 mu_DirNode.mu_owner = mu_msg.mu_src;
 mu_Send ( mu_FwdGetM, mu_DirNode.mu_owner, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_msg.mu_src, 0 );
@@ -2152,6 +2185,88 @@ mu_ErrorUnhandledMsg ( mu_msg, (int)mu_Directory );
 break;
 }
 break;
+case mu_Dir_MX_FwdGetSAck:
+switch ((int) mu_msg.mu_mtype) {
+case mu_GetS:
+mu_msg_processed = mu_false;
+break;
+case mu_GetM:
+mu_msg_processed = mu_false;
+break;
+case mu_PutS:
+mu_msg_processed = mu_false;
+break;
+case mu_PutM:
+mu_msg_processed = mu_false;
+break;
+case mu_Data:
+mu_msg_processed = mu_false;
+break;
+case mu_FwdGetSAck:
+mu_DirNode.mu_state = mu_Dir_MS_D;
+break;
+default:
+mu_ErrorUnhandledMsg ( mu_msg, (int)mu_Directory );
+break;
+}
+break;
+case mu_Dir_MX_FwdGetMAck:
+switch ((int) mu_msg.mu_mtype) {
+case mu_GetS:
+mu_msg_processed = mu_false;
+break;
+case mu_GetM:
+mu_msg_processed = mu_false;
+break;
+case mu_PutS:
+mu_msg_processed = mu_false;
+break;
+case mu_PutM:
+mu_msg_processed = mu_false;
+break;
+case mu_Data:
+mu_msg_processed = mu_false;
+break;
+case mu_FwdGetMAck:
+mu_DirNode.mu_state = mu_Dir_M;
+break;
+default:
+mu_ErrorUnhandledMsg ( mu_msg, (int)mu_Directory );
+break;
+}
+break;
+case mu_Dir_SM_A:
+switch ((int) mu_msg.mu_mtype) {
+case mu_GetS:
+mu_msg_processed = mu_false;
+break;
+case mu_GetM:
+mu_msg_processed = mu_false;
+break;
+case mu_PutS:
+mu_msg_processed = mu_false;
+break;
+case mu_PutM:
+mu_msg_processed = mu_false;
+break;
+case mu_Data:
+mu_msg_processed = mu_false;
+break;
+case mu_InvAck:
+if ( (mu_DirNode.mu_ack_cnt) == (0) )
+{
+mu_DirNode.mu_state = mu_Dir_M;
+}
+else
+{
+mu_DirNode.mu_ack_cnt = (mu_DirNode.mu_ack_cnt) - (1);
+}
+break;
+default:
+mu_ErrorUnhandledMsg ( mu_msg, (int)mu_Directory );
+break;
+}
+break;
 }
 };
 /*** end procedure declaration ***/
@@ -2171,6 +2286,7 @@ switch ((int) mu_msg.mu_mtype) {
 case mu_Inv:
 mu_pstate = mu_Proc_I;
 mu_Send ( mu_InvAck, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_InvAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 break;
 default:
 mu_ErrorUnhandledMsg ( mu_msg, (int)mu_p );
@@ -2271,6 +2387,7 @@ switch ((int) mu_msg.mu_mtype) {
 case mu_Inv:
 mu_pstate = mu_Proc_I;
 mu_Send ( mu_InvAck, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_InvAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_pvalue.undefine();
 break;
 default:
@@ -2289,6 +2406,7 @@ break;
 case mu_Inv:
 mu_pstate = mu_Proc_IM_AD;
 mu_Send ( mu_InvAck, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_InvAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 break;
 case mu_Data:
 if ( !((mu_msg.mu_src) == (mu_Directory)) ) Error.Error("Assertion failed: error at Proc_SM_AD, Data not from dir.");
@@ -2355,11 +2473,13 @@ switch ((int) mu_msg.mu_mtype) {
 case mu_FwdGetS:
 mu_pstate = mu_Proc_S;
 mu_Send ( mu_Data, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_FwdGetSAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_Send ( mu_Data, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
 break;
 case mu_FwdGetM:
 mu_pstate = mu_Proc_I;
 mu_Send ( mu_Data, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_FwdGetMAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_pvalue.undefine();
 break;
 default:
@@ -2372,11 +2492,13 @@ switch ((int) mu_msg.mu_mtype) {
 case mu_FwdGetS:
 mu_pstate = mu_Proc_SI_A;
 mu_Send ( mu_Data, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_FwdGetSAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_Send ( mu_Data, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
 break;
 case mu_FwdGetM:
 mu_pstate = mu_Proc_II_A;
 mu_Send ( mu_Data, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_FwdGetMAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 break;
 case mu_PutAck:
 mu_pstate = mu_Proc_I;
@@ -2392,6 +2514,7 @@ switch ((int) mu_msg.mu_mtype) {
 case mu_Inv:
 mu_pstate = mu_Proc_II_A;
 mu_Send ( mu_InvAck, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_InvAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 break;
 case mu_PutAck:
 mu_pstate = mu_Proc_I;
@@ -2613,8 +2736,8 @@ public:
   char * Name(unsigned r)
   {
     static mu_1__type_4_id mu_msg_idx;
-    mu_msg_idx.value((r % 4) + 0);
-    r = r / 4;
+    mu_msg_idx.value((r % 7) + 0);
+    r = r / 7;
     static mu_1_Node mu_n;
     mu_n.unionassign(r % 4);
     r = r / 4;
@@ -2623,8 +2746,8 @@ public:
   bool Condition(unsigned r)
   {
     static mu_1__type_4_id mu_msg_idx;
-    mu_msg_idx.value((r % 4) + 0);
-    r = r / 4;
+    mu_msg_idx.value((r % 7) + 0);
+    r = r / 7;
     static mu_1_Node mu_n;
     mu_n.unionassign(r % 4);
     r = r / 4;
@@ -2639,12 +2762,12 @@ public:
   {
     unsigned r = what_rule - 12;
     static mu_1__type_4_id mu_msg_idx;
-    mu_msg_idx.value((r % 4) + 0);
-    r = r / 4;
+    mu_msg_idx.value((r % 7) + 0);
+    r = r / 7;
     static mu_1_Node mu_n;
     mu_n.unionassign(r % 4);
     r = r / 4;
-    while (what_rule < 28 && mu_msg_idx.value()<4 )
+    while (what_rule < 40 && mu_msg_idx.value()<7 )
       {
         if ( ( TRUE && mu_Net[mu_n].in(mu_msg_idx) ) ) {
   mu_1__type_4& mu_chan = mu_Net[mu_n];
@@ -2662,8 +2785,8 @@ public:
         else
           what_rule += 1;
     r = what_rule - 12;
-    mu_msg_idx.value((r % 4) + 0);
-    r = r / 4;
+    mu_msg_idx.value((r % 7) + 0);
+    r = r / 7;
     mu_n.unionassign(r % 4);
     r = r / 4;
     }
@@ -2672,8 +2795,8 @@ public:
   void Code(unsigned r)
   {
     static mu_1__type_4_id mu_msg_idx;
-    mu_msg_idx.value((r % 4) + 0);
-    r = r / 4;
+    mu_msg_idx.value((r % 7) + 0);
+    r = r / 7;
     static mu_1_Node mu_n;
     mu_n.unionassign(r % 4);
     r = r / 4;
@@ -2724,11 +2847,11 @@ public:
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 28;
+    unsigned r = what_rule - 40;
     static mu_1_Proc mu_n;
     mu_n.value((r % 3) + 1);
     r = r / 3;
-    while (what_rule < 31 )
+    while (what_rule < 43 )
       {
         if ( ( TRUE  ) ) {
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
@@ -2743,7 +2866,7 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 28;
+    r = what_rule - 40;
     mu_n.value((r % 3) + 1);
     r = r / 3;
     }
@@ -2788,11 +2911,11 @@ public:
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 31;
+    unsigned r = what_rule - 43;
     static mu_1_Proc mu_n;
     mu_n.value((r % 3) + 1);
     r = r / 3;
-    while (what_rule < 34 )
+    while (what_rule < 46 )
       {
         if ( ( TRUE  ) ) {
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
@@ -2807,7 +2930,7 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 31;
+    r = what_rule - 43;
     mu_n.value((r % 3) + 1);
     r = r / 3;
     }
@@ -2852,11 +2975,11 @@ public:
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 34;
+    unsigned r = what_rule - 46;
     static mu_1_Proc mu_n;
     mu_n.value((r % 3) + 1);
     r = r / 3;
-    while (what_rule < 37 )
+    while (what_rule < 49 )
       {
         if ( ( TRUE  ) ) {
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
@@ -2871,7 +2994,7 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 34;
+    r = what_rule - 46;
     mu_n.value((r % 3) + 1);
     r = r / 3;
     }
@@ -2916,11 +3039,11 @@ public:
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 37;
+    unsigned r = what_rule - 49;
     static mu_1_Proc mu_n;
     mu_n.value((r % 3) + 1);
     r = r / 3;
-    while (what_rule < 40 )
+    while (what_rule < 52 )
       {
         if ( ( TRUE  ) ) {
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
@@ -2935,7 +3058,7 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 37;
+    r = what_rule - 49;
     mu_n.value((r % 3) + 1);
     r = r / 3;
     }
@@ -2980,11 +3103,11 @@ public:
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 40;
+    unsigned r = what_rule - 52;
     static mu_1_Proc mu_n;
     mu_n.value((r % 3) + 1);
     r = r / 3;
-    while (what_rule < 43 )
+    while (what_rule < 55 )
       {
         if ( ( TRUE  ) ) {
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
@@ -2999,7 +3122,7 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 40;
+    r = what_rule - 52;
     mu_n.value((r % 3) + 1);
     r = r / 3;
     }
@@ -3034,75 +3157,75 @@ void SetNextEnabledRule(unsigned & what_rule)
   if (what_rule<12)
     { R0.NextRule(what_rule);
       if (what_rule<12) return; }
-  if (what_rule>=12 && what_rule<28)
+  if (what_rule>=12 && what_rule<40)
     { R1.NextRule(what_rule);
-      if (what_rule<28) return; }
-  if (what_rule>=28 && what_rule<31)
-    { R2.NextRule(what_rule);
-      if (what_rule<31) return; }
-  if (what_rule>=31 && what_rule<34)
-    { R3.NextRule(what_rule);
-      if (what_rule<34) return; }
-  if (what_rule>=34 && what_rule<37)
-    { R4.NextRule(what_rule);
-      if (what_rule<37) return; }
-  if (what_rule>=37 && what_rule<40)
-    { R5.NextRule(what_rule);
       if (what_rule<40) return; }
   if (what_rule>=40 && what_rule<43)
-    { R6.NextRule(what_rule);
+    { R2.NextRule(what_rule);
       if (what_rule<43) return; }
+  if (what_rule>=43 && what_rule<46)
+    { R3.NextRule(what_rule);
+      if (what_rule<46) return; }
+  if (what_rule>=46 && what_rule<49)
+    { R4.NextRule(what_rule);
+      if (what_rule<49) return; }
+  if (what_rule>=49 && what_rule<52)
+    { R5.NextRule(what_rule);
+      if (what_rule<52) return; }
+  if (what_rule>=52 && what_rule<55)
+    { R6.NextRule(what_rule);
+      if (what_rule<55) return; }
 }
 bool Condition(unsigned r)
 {
   category = CONDITION;
   if (r<=11) return R0.Condition(r-0);
-  if (r>=12 && r<=27) return R1.Condition(r-12);
-  if (r>=28 && r<=30) return R2.Condition(r-28);
-  if (r>=31 && r<=33) return R3.Condition(r-31);
-  if (r>=34 && r<=36) return R4.Condition(r-34);
-  if (r>=37 && r<=39) return R5.Condition(r-37);
-  if (r>=40 && r<=42) return R6.Condition(r-40);
+  if (r>=12 && r<=39) return R1.Condition(r-12);
+  if (r>=40 && r<=42) return R2.Condition(r-40);
+  if (r>=43 && r<=45) return R3.Condition(r-43);
+  if (r>=46 && r<=48) return R4.Condition(r-46);
+  if (r>=49 && r<=51) return R5.Condition(r-49);
+  if (r>=52 && r<=54) return R6.Condition(r-52);
 Error.Notrace("Internal: NextStateGenerator -- checking condition for nonexisting rule.");
 }
 void Code(unsigned r)
 {
   if (r<=11) { R0.Code(r-0); return; } 
-  if (r>=12 && r<=27) { R1.Code(r-12); return; } 
-  if (r>=28 && r<=30) { R2.Code(r-28); return; } 
-  if (r>=31 && r<=33) { R3.Code(r-31); return; } 
-  if (r>=34 && r<=36) { R4.Code(r-34); return; } 
-  if (r>=37 && r<=39) { R5.Code(r-37); return; } 
-  if (r>=40 && r<=42) { R6.Code(r-40); return; } 
+  if (r>=12 && r<=39) { R1.Code(r-12); return; } 
+  if (r>=40 && r<=42) { R2.Code(r-40); return; } 
+  if (r>=43 && r<=45) { R3.Code(r-43); return; } 
+  if (r>=46 && r<=48) { R4.Code(r-46); return; } 
+  if (r>=49 && r<=51) { R5.Code(r-49); return; } 
+  if (r>=52 && r<=54) { R6.Code(r-52); return; } 
 }
 int Priority(unsigned short r)
 {
   if (r<=11) { return R0.Priority(); } 
-  if (r>=12 && r<=27) { return R1.Priority(); } 
-  if (r>=28 && r<=30) { return R2.Priority(); } 
-  if (r>=31 && r<=33) { return R3.Priority(); } 
-  if (r>=34 && r<=36) { return R4.Priority(); } 
-  if (r>=37 && r<=39) { return R5.Priority(); } 
-  if (r>=40 && r<=42) { return R6.Priority(); } 
+  if (r>=12 && r<=39) { return R1.Priority(); } 
+  if (r>=40 && r<=42) { return R2.Priority(); } 
+  if (r>=43 && r<=45) { return R3.Priority(); } 
+  if (r>=46 && r<=48) { return R4.Priority(); } 
+  if (r>=49 && r<=51) { return R5.Priority(); } 
+  if (r>=52 && r<=54) { return R6.Priority(); } 
 }
 char * Name(unsigned r)
 {
   if (r<=11) return R0.Name(r-0);
-  if (r>=12 && r<=27) return R1.Name(r-12);
-  if (r>=28 && r<=30) return R2.Name(r-28);
-  if (r>=31 && r<=33) return R3.Name(r-31);
-  if (r>=34 && r<=36) return R4.Name(r-34);
-  if (r>=37 && r<=39) return R5.Name(r-37);
-  if (r>=40 && r<=42) return R6.Name(r-40);
+  if (r>=12 && r<=39) return R1.Name(r-12);
+  if (r>=40 && r<=42) return R2.Name(r-40);
+  if (r>=43 && r<=45) return R3.Name(r-43);
+  if (r>=46 && r<=48) return R4.Name(r-46);
+  if (r>=49 && r<=51) return R5.Name(r-49);
+  if (r>=52 && r<=54) return R6.Name(r-52);
   return NULL;
 }
 };
-const unsigned numrules = 43;
+const unsigned numrules = 55;
 
 /********************
   parameter
  ********************/
-#define RULES_IN_WORLD 43
+#define RULES_IN_WORLD 55
 
 
 /********************
@@ -3119,6 +3242,7 @@ public:
   void Code(unsigned short r)
   {
 mu_DirNode.mu_state = mu_Dir_I;
+mu_DirNode.mu_ack_cnt = 0;
 mu_DirNode.mu_owner = mu_Directory;
 mu_DirNode.mu_sharers.undefine();
 {
@@ -3356,7 +3480,7 @@ bool mu__condition_46() // Condition for Rule "Processor in S state implies the 
 
 /**** end rule declaration ****/
 
-int mu__invariant_47() // Invariant "Direcotry in S state implies non-empty sharer list"
+int mu__invariant_47() // Invariant "Directory in S state implies non-empty sharer list"
 {
 bool mu__boolexpr48;
   if (!((mu_DirNode.mu_state) == (mu_Dir_S))) mu__boolexpr48 = TRUE ;
@@ -3380,14 +3504,14 @@ bool mu__boolexpr48;
 return mu__boolexpr48;
 };
 
-bool mu__condition_50() // Condition for Rule "Direcotry in S state implies non-empty sharer list"
+bool mu__condition_50() // Condition for Rule "Directory in S state implies non-empty sharer list"
 {
   return mu__invariant_47( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_51() // Invariant "Direcotry in I or M state implies empty sharer list"
+int mu__invariant_51() // Invariant "Directory in I or M state implies empty sharer list"
 {
 bool mu__boolexpr52;
 bool mu__boolexpr53;
@@ -3416,14 +3540,14 @@ bool mu__boolexpr53;
 return mu__boolexpr52;
 };
 
-bool mu__condition_55() // Condition for Rule "Direcotry in I or M state implies empty sharer list"
+bool mu__condition_55() // Condition for Rule "Directory in I or M state implies empty sharer list"
 {
   return mu__invariant_51( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_56() // Invariant "Direcotry in M state implies owner exists"
+int mu__invariant_56() // Invariant "Directory in M state implies owner exists"
 {
 bool mu__boolexpr57;
   if (!((mu_DirNode.mu_state) == (mu_Dir_M))) mu__boolexpr57 = TRUE ;
@@ -3433,14 +3557,14 @@ bool mu__boolexpr57;
 return mu__boolexpr57;
 };
 
-bool mu__condition_58() // Condition for Rule "Direcotry in M state implies owner exists"
+bool mu__condition_58() // Condition for Rule "Directory in M state implies owner exists"
 {
   return mu__invariant_56( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_59() // Invariant "Direcotry in I or S state implies empty owner"
+int mu__invariant_59() // Invariant "Directory in I or S state implies empty owner"
 {
 bool mu__boolexpr60;
 bool mu__boolexpr61;
@@ -3455,7 +3579,7 @@ bool mu__boolexpr61;
 return mu__boolexpr60;
 };
 
-bool mu__condition_62() // Condition for Rule "Direcotry in I or S state implies empty owner"
+bool mu__condition_62() // Condition for Rule "Directory in I or S state implies empty owner"
 {
   return mu__invariant_59( );
 }
@@ -3463,10 +3587,10 @@ bool mu__condition_62() // Condition for Rule "Direcotry in I or S state implies
 /**** end rule declaration ****/
 
 const rulerec invariants[] = {
-{"Direcotry in I or S state implies empty owner", &mu__condition_62, NULL, FALSE},
-{"Direcotry in M state implies owner exists", &mu__condition_58, NULL, FALSE},
-{"Direcotry in I or M state implies empty sharer list", &mu__condition_55, NULL, FALSE},
-{"Direcotry in S state implies non-empty sharer list", &mu__condition_50, NULL, FALSE},
+{"Directory in I or S state implies empty owner", &mu__condition_62, NULL, FALSE},
+{"Directory in M state implies owner exists", &mu__condition_58, NULL, FALSE},
+{"Directory in I or M state implies empty sharer list", &mu__condition_55, NULL, FALSE},
+{"Directory in S state implies non-empty sharer list", &mu__condition_50, NULL, FALSE},
 {"Processor in S state implies the value match memory", &mu__condition_46, NULL, FALSE},
 {"Processor in I state implies the value is undefined", &mu__condition_41, NULL, FALSE},
 {"Values in memory matches value of last write, when shared or invalid", &mu__condition_37, NULL, FALSE},
@@ -4950,7 +5074,7 @@ void mu_1__type_4::Permute(PermSet& Perm, int i)
 {
   static mu_1__type_4 temp("Permute_mu_1__type_4",-1);
   int j;
-  for (j=0; j<4; j++)
+  for (j=0; j<7; j++)
     array[j].Permute(Perm, i);
 };
 void mu_1__type_4::SimpleCanonicalize(PermSet& Perm)
@@ -4970,7 +5094,7 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
   // while guard
   bool while_guard, while_guard_temp;
   // sorting
-  static mu_1_Message value[4];
+  static mu_1_Message value[7];
   // limit
   bool exists;
   bool split;
@@ -4982,12 +5106,12 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
   bool pos_mu_1_Proc[3][3];
   bool goodset_mu_1_Proc[3];
   int count_multisetindex, oldcount_multisetindex;
-  bool pos_multisetindex[4][4];
-  bool goodset_multisetindex[4];
+  bool pos_multisetindex[7][7];
+  bool goodset_multisetindex[7];
   mu_1_Message temp;
 
   // compact
-  for (i = 0, j = 0; i < 4; i++)
+  for (i = 0, j = 0; i < 7; i++)
     if (valid[i].value())
       {
         if (j!=i)
@@ -4996,11 +5120,11 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
           j++;
       }
   if (j != current_size) current_size = j;
-  for (i = j; i < 4; i++)
+  for (i = j; i < 7; i++)
     array[i].undefine();
   for (i = 0; i < j; i++)
     valid[i].value(TRUE);
-  for (i = j; i < 4; i++)
+  for (i = j; i < 7; i++)
     valid[i].value(FALSE);
 
   // bubble sort

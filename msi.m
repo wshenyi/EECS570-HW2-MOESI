@@ -11,7 +11,7 @@ const
   RequestChannel: 0;     -- virtual channel #0
 	ForwardChannel: 1;     -- virtual channel #1
 	ResponseChannel: 2;    -- virtual channel #2
-  NetMax: ProcCount+1;   -- num of proc plus 1 dir
+  NetMax: 2*ProcCount+1;   -- num of proc plus 1 dir
   
 
 ----------------------------------------------------------------------
@@ -36,6 +36,8 @@ type
                       Data,
                       InvAck,
                       PutAck,
+                      FwdGetSAck,
+                      FwdGetMAck,
                       -- Forward channel
                       Inv,
                       FwdGetS,
@@ -61,11 +63,15 @@ type
       							Dir_S,
                     Dir_I,
                     -- Transition states
-                    Dir_MS_D 
+                    Dir_MS_D,
+                    Dir_SM_A,
+                    Dir_MX_FwdGetSAck,
+                    Dir_MX_FwdGetMAck  
                   };
       owner: Node;	-- Assuming has only one memory location
       value: Value;   -- Assuming has only one memory location
       sharers: multiset [ProcCount] of Node;
+      ack_cnt: AckCount;
     End;
 
   ProcState: -- Cache controller states
@@ -127,18 +133,25 @@ End;
 Procedure ErrorUnhandledMsg(msg: Message; n: Node);
 Begin
   put "\n====================Error Msg====================\n";
-  put DirNode.state;
-  put "src: ";
-  put msg.src;
-  put "\n";
   put "mtype: ";
   put msg.mtype;
   put "\n";
-  if IsMember(n, Proc) then
-    put "dst_state: ";
-    put Procs[n].state;
-    put "\n";
+  put "src: ";
+  put msg.src;
+  put "\n";
+  put "src_state: ";
+  if IsMember(msg.src, Proc) then
+    put Procs[msg.src].state;
+  else
+    put DirNode.state;
   endif;
+  put "dst_state: ";
+  if IsMember(n, Proc) then
+    put Procs[n].state;
+  else
+    put DirNode.state;
+  endif;
+  put "\n";
   error "Unhandled message type!";
 End;
 
@@ -218,7 +231,7 @@ Begin
       AddToSharersList(msg.src);
       Send(Data, msg.src, Directory, ResponseChannel, DirNode.value, UNDEFINED, 0);
 		case GetM:
-			DirNode.state := Dir_M;
+			DirNode.state := Dir_SM_A;
       if IsSharer(msg.src) then
 			  Send(Data, msg.src, Directory, ResponseChannel, DirNode.value, UNDEFINED, cnt-1);
       else
@@ -246,12 +259,13 @@ Begin
   case Dir_M:
     switch msg.mtype
     case GetS:
-      DirNode.state := Dir_MS_D;
+      DirNode.state := Dir_MX_FwdGetSAck;
       Send(FwdGetS, DirNode.owner, Directory, ForwardChannel, UNDEFINED, msg.src, 0);
       AddToSharersList(msg.src);
       AddToSharersList(DirNode.owner);
       DirNode.owner := Directory;
     case GetM:
+      DirNode.state := Dir_MX_FwdGetMAck;
       DirNode.value := msg.value;
       DirNode.owner := msg.src;
       Send(FwdGetM, DirNode.owner, Directory, ForwardChannel, UNDEFINED, msg.src, 0);
@@ -293,6 +307,61 @@ Begin
     else
       ErrorUnhandledMsg(msg, Directory);
     endswitch;
+  case Dir_MX_FwdGetSAck:
+    switch msg.mtype
+    case GetS:
+      msg_processed := false;
+    case GetM:
+      msg_processed := false;
+    case PutS:
+      msg_processed := false;
+    case PutM:
+      msg_processed := false;
+    case Data:
+      msg_processed := false;
+    case FwdGetSAck:
+      DirNode.state := Dir_MS_D;
+    else
+      ErrorUnhandledMsg(msg, Directory);
+    endswitch;
+  case Dir_MX_FwdGetMAck:
+    switch msg.mtype
+    case GetS:
+      msg_processed := false;
+    case GetM:
+      msg_processed := false;
+    case PutS:
+      msg_processed := false;
+    case PutM:
+      msg_processed := false;
+    case Data:
+      msg_processed := false;
+    case FwdGetMAck:
+      DirNode.state := Dir_M;
+    else
+      ErrorUnhandledMsg(msg, Directory);
+    endswitch;
+  case Dir_SM_A:
+    switch msg.mtype
+    case GetS:
+      msg_processed := false;
+    case GetM:
+      msg_processed := false;
+    case PutS:
+      msg_processed := false;
+    case PutM:
+      msg_processed := false;
+    case Data:
+      msg_processed := false;
+    case InvAck:
+      if DirNode.ack_cnt = 0 then
+        DirNode.state := Dir_M;
+      else
+        DirNode.ack_cnt := DirNode.ack_cnt - 1;
+      endif;
+    else
+      ErrorUnhandledMsg(msg, Directory);
+    endswitch;
   endswitch;
 End;
 
@@ -315,6 +384,7 @@ Begin
     case Inv:
       pstate := Proc_I;
       Send(InvAck, msg.fwd_to, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+      Send(InvAck, Directory, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
     else
       ErrorUnhandledMsg(msg, p);
     endswitch;
@@ -390,6 +460,7 @@ Begin
     case Inv:
       pstate := Proc_I;
       Send(InvAck, msg.fwd_to, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+      Send(InvAck, Directory, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       undefine pvalue;
     else
       ErrorUnhandledMsg(msg, p);
@@ -404,6 +475,7 @@ Begin
     case Inv:
       pstate := Proc_IM_AD;
       Send(InvAck, msg.fwd_to, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+      Send(InvAck, Directory, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
     case Data:
       assert (msg.src = Directory) "error at Proc_SM_AD, Data not from dir.";
       if msg.ack_cnt = 0 then
@@ -453,10 +525,12 @@ Begin
     case FwdGetS:
       pstate := Proc_S;
       Send(Data, Directory,  p, ResponseChannel, pvalue, UNDEFINED, 0);
+      Send(FwdGetSAck, Directory,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       Send(Data, msg.fwd_to, p, ResponseChannel, pvalue, UNDEFINED, 0);
     case FwdGetM:
       pstate := Proc_I;
       Send(Data, msg.fwd_to, p, ResponseChannel, pvalue, UNDEFINED, 0);
+      Send(FwdGetMAck, Directory,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       undefine pvalue;
     else
       ErrorUnhandledMsg(msg, p);
@@ -467,13 +541,14 @@ Begin
     case FwdGetS:
       pstate := Proc_SI_A;
       Send(Data, Directory,  p, ResponseChannel, pvalue, UNDEFINED, 0);
+      Send(FwdGetSAck, Directory,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       Send(Data, msg.fwd_to, p, ResponseChannel, pvalue, UNDEFINED, 0);
     case FwdGetM:
       pstate := Proc_II_A;
       Send(Data, msg.fwd_to, p, ResponseChannel, pvalue, UNDEFINED, 0);
+      Send(FwdGetMAck, Directory,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
     case PutAck:
       pstate := Proc_I;
-      -- Send(PutAck, Directory,p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       undefine pvalue;
     else
       ErrorUnhandledMsg(msg, p);
@@ -484,9 +559,9 @@ Begin
     case Inv:
       pstate := Proc_II_A;
       Send(InvAck, msg.fwd_to,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+      Send(InvAck, Directory, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
     case PutAck:
       pstate := Proc_I;
-      -- Send(PutAck, Directory,p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       undefine pvalue;
     else
       ErrorUnhandledMsg(msg, p);
@@ -621,6 +696,7 @@ startstate
 
   -- directory node initialization
   DirNode.state := Dir_I;
+  DirNode.ack_cnt := 0;
   DirNode.owner := Directory;
   undefine DirNode.sharers;
 	For v: Value do
@@ -643,23 +719,23 @@ endstartstate;
 -- Invariants
 ----------------------------------------------------------------------
 --- Contriants for DirNode.owner
-invariant "Direcotry in I or S state implies empty owner"
+invariant "Directory in I or S state implies empty owner"
   (DirNode.state = Dir_I | DirNode.state = Dir_S)
     ->
       DirNode.owner = Directory;
 
-invariant "Direcotry in M state implies owner exists"
+invariant "Directory in M state implies owner exists"
   DirNode.state = Dir_M
     ->
       DirNode.owner != Directory;
 
 --- Contriants for DirNode.sharers
-invariant "Direcotry in I or M state implies empty sharer list"
+invariant "Directory in I or M state implies empty sharer list"
   (DirNode.state = Dir_I | DirNode.state = Dir_M)
     ->
       MultiSetCount(i: DirNode.sharers, true) = 0;
 
-invariant "Direcotry in S state implies non-empty sharer list"
+invariant "Directory in S state implies non-empty sharer list"
   DirNode.state = Dir_S
     ->
       MultiSetCount(i: DirNode.sharers, true) > 0;
