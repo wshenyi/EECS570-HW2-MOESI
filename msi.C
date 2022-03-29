@@ -2089,10 +2089,15 @@ mu_DirNode.mu_state = mu_Dir_SM_A;
 if ( mu_IsSharer( mu_msg.mu_src ) )
 {
 mu_Send ( mu_Data, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_DirNode.mu_value, mu_1_Node_undefined_var, (mu_cnt) - (1) );
+mu_DirNode.mu_ack_cnt = (mu_cnt) - (1);
 }
 else
 {
 mu_Send ( mu_Data, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_DirNode.mu_value, mu_1_Node_undefined_var, (int)mu_cnt );
+if (mu_cnt.isundefined())
+  mu_DirNode.mu_ack_cnt.undefine();
+else
+  mu_DirNode.mu_ack_cnt = mu_cnt;
 }
 mu_SendInvReqToSharers ( mu_msg.mu_src );
 mu_DirNode.mu_sharers.undefine();
@@ -2121,14 +2126,14 @@ break;
 case mu_Dir_M:
 switch ((int) mu_msg.mu_mtype) {
 case mu_GetS:
-mu_DirNode.mu_state = mu_Dir_MX_FwdGetSAck;
+mu_DirNode.mu_state = mu_Dir_MS_D;
 mu_Send ( mu_FwdGetS, mu_DirNode.mu_owner, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_msg.mu_src, 0 );
 mu_AddToSharersList ( mu_msg.mu_src );
 mu_AddToSharersList ( mu_DirNode.mu_owner );
 mu_DirNode.mu_owner = mu_Directory;
 break;
 case mu_GetM:
-mu_DirNode.mu_state = mu_Dir_MX_FwdGetMAck;
+mu_DirNode.mu_state = mu_Dir_M;
 mu_DirNode.mu_value = mu_msg.mu_value;
 mu_DirNode.mu_owner = mu_msg.mu_src;
 mu_Send ( mu_FwdGetM, mu_DirNode.mu_owner, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_msg.mu_src, 0 );
@@ -2168,7 +2173,7 @@ if ( !((mu_msg.mu_src) != (mu_DirNode.mu_owner)) ) Error.Error("Assertion failed
 mu_RemoveFromSharersList ( mu_msg.mu_src );
 mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 break;
-case mu_Data:
+case mu_FwdGetSAck:
 mu_DirNode.mu_value = mu_msg.mu_value;
 if ( (mu_cnt) == (0) )
 {
@@ -2203,7 +2208,10 @@ case mu_Data:
 mu_msg_processed = mu_false;
 break;
 case mu_FwdGetSAck:
-mu_DirNode.mu_state = mu_Dir_MS_D;
+mu_msg_processed = mu_false;
+mu_DirNode.mu_value = mu_msg.mu_value;
+mu_DirNode.mu_state = mu_Dir_S;
+mu_LastWrite = mu_DirNode.mu_value;
 break;
 default:
 mu_ErrorUnhandledMsg ( mu_msg, (int)mu_Directory );
@@ -2282,16 +2290,7 @@ mu_msg_processed = mu_true;
   mu_1_AckCount& mu_pcnt = mu_Procs[mu_p].mu_ack_cnt;
 switch ((int) mu_pstate) {
 case mu_Proc_I:
-switch ((int) mu_msg.mu_mtype) {
-case mu_Inv:
-mu_pstate = mu_Proc_I;
-mu_Send ( mu_InvAck, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
-mu_Send ( mu_InvAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
-break;
-default:
 mu_ErrorUnhandledMsg ( mu_msg, (int)mu_p );
-break;
-}
 break;
 case mu_Proc_IS_D:
 switch ((int) mu_msg.mu_mtype) {
@@ -2299,7 +2298,20 @@ case mu_Inv:
 mu_msg_processed = mu_false;
 break;
 case mu_Data:
+bool mu__boolexpr16;
+bool mu__boolexpr17;
+  if (!((mu_msg.mu_ack_cnt) == (0))) mu__boolexpr17 = FALSE ;
+  else {
+  mu__boolexpr17 = ((mu_msg.mu_src) == (mu_Directory)) ; 
+}
+  if (mu__boolexpr17) mu__boolexpr16 = TRUE ;
+  else {
+  mu__boolexpr16 = ((mu_DirNode.mu_owner) == (mu_msg.mu_src)) ; 
+}
+if ( mu__boolexpr16 )
+{
 mu_pstate = mu_Proc_S;
+}
 mu_pvalue = mu_msg.mu_value;
 break;
 default:
@@ -2472,8 +2484,7 @@ case mu_Proc_M:
 switch ((int) mu_msg.mu_mtype) {
 case mu_FwdGetS:
 mu_pstate = mu_Proc_S;
-mu_Send ( mu_Data, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
-mu_Send ( mu_FwdGetSAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_FwdGetSAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
 mu_Send ( mu_Data, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
 break;
 case mu_FwdGetM:
@@ -2491,8 +2502,7 @@ case mu_Proc_MI_A:
 switch ((int) mu_msg.mu_mtype) {
 case mu_FwdGetS:
 mu_pstate = mu_Proc_SI_A;
-mu_Send ( mu_Data, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
-mu_Send ( mu_FwdGetSAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_FwdGetSAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
 mu_Send ( mu_Data, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
 break;
 case mu_FwdGetM:
@@ -3283,320 +3293,320 @@ unsigned short StartStateManager::numstartstates = 1;
 /********************
   Invariant records
  ********************/
-int mu__invariant_16() // Invariant "Invalid Processors are not present on Sharer's List"
+int mu__invariant_18() // Invariant "Invalid Processors are not present on Sharer's List"
 {
-bool mu__quant17; 
-mu__quant17 = TRUE;
+bool mu__quant19; 
+mu__quant19 = TRUE;
 {
 for(int mu_n = 1; mu_n <= 3; mu_n++) {
-bool mu__boolexpr18;
-  if (!((mu_Procs[mu_n].mu_state) == (mu_Proc_I))) mu__boolexpr18 = TRUE ;
+bool mu__boolexpr20;
+  if (!((mu_Procs[mu_n].mu_state) == (mu_Proc_I))) mu__boolexpr20 = TRUE ;
   else {
 /*** begin multisetcount 7 declaration ***/
-  int mu__intexpr19 = 0;
+  int mu__intexpr21 = 0;
   {
   mu_1__type_1_id mu_i;
   for (mu_i = 0; ; mu_i=mu_i+1)
     {
       if (mu_DirNode.mu_sharers.valid[(int)mu_i].value())
         {
-          if ( (mu_DirNode.mu_sharers[mu_i]) == (mu_n) ) mu__intexpr19++;
+          if ( (mu_DirNode.mu_sharers[mu_i]) == (mu_n) ) mu__intexpr21++;
         }
       if (mu_i == 3-1) break;
     }
   }
 /*** end multisetcount 7 declaration ***/
-  mu__boolexpr18 = ((mu__intexpr19) == (0)) ; 
+  mu__boolexpr20 = ((mu__intexpr21) == (0)) ; 
 }
-if ( !(mu__boolexpr18) )
-  { mu__quant17 = FALSE; break; }
+if ( !(mu__boolexpr20) )
+  { mu__quant19 = FALSE; break; }
 };
 };
-return mu__quant17;
+return mu__quant19;
 };
 
-bool mu__condition_20() // Condition for Rule "Invalid Processors are not present on Sharer's List"
+bool mu__condition_22() // Condition for Rule "Invalid Processors are not present on Sharer's List"
 {
-  return mu__invariant_16( );
+  return mu__invariant_18( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_21() // Invariant "If processor is in Modified state, there are no Sharers"
+int mu__invariant_23() // Invariant "If processor is in Modified state, there are no Sharers"
 {
-bool mu__quant22; 
-mu__quant22 = TRUE;
+bool mu__quant24; 
+mu__quant24 = TRUE;
 {
 for(int mu_n = 1; mu_n <= 3; mu_n++) {
-bool mu__quant23; 
-mu__quant23 = TRUE;
+bool mu__quant25; 
+mu__quant25 = TRUE;
 {
 for(int mu_m = 1; mu_m <= 3; mu_m++) {
-bool mu__boolexpr24;
-bool mu__boolexpr25;
-  if (!((mu_Procs[mu_n].mu_state) == (mu_Proc_M))) mu__boolexpr25 = FALSE ;
-  else {
-  mu__boolexpr25 = ((mu_n) != (mu_m)) ; 
-}
-  if (!(mu__boolexpr25)) mu__boolexpr24 = TRUE ;
-  else {
 bool mu__boolexpr26;
-  if (!((mu_Procs[mu_m].mu_state) != (mu_Proc_S))) mu__boolexpr26 = FALSE ;
+bool mu__boolexpr27;
+  if (!((mu_Procs[mu_n].mu_state) == (mu_Proc_M))) mu__boolexpr27 = FALSE ;
   else {
-  mu__boolexpr26 = ((mu_Procs[mu_m].mu_state) != (mu_Proc_M)) ; 
+  mu__boolexpr27 = ((mu_n) != (mu_m)) ; 
 }
-  mu__boolexpr24 = (mu__boolexpr26) ; 
+  if (!(mu__boolexpr27)) mu__boolexpr26 = TRUE ;
+  else {
+bool mu__boolexpr28;
+  if (!((mu_Procs[mu_m].mu_state) != (mu_Proc_S))) mu__boolexpr28 = FALSE ;
+  else {
+  mu__boolexpr28 = ((mu_Procs[mu_m].mu_state) != (mu_Proc_M)) ; 
 }
-if ( !(mu__boolexpr24) )
-  { mu__quant23 = FALSE; break; }
+  mu__boolexpr26 = (mu__boolexpr28) ; 
+}
+if ( !(mu__boolexpr26) )
+  { mu__quant25 = FALSE; break; }
 };
 };
-if ( !(mu__quant23) )
-  { mu__quant22 = FALSE; break; }
+if ( !(mu__quant25) )
+  { mu__quant24 = FALSE; break; }
 };
 };
-return mu__quant22;
+return mu__quant24;
 };
 
-bool mu__condition_27() // Condition for Rule "If processor is in Modified state, there are no Sharers"
+bool mu__condition_29() // Condition for Rule "If processor is in Modified state, there are no Sharers"
 {
-  return mu__invariant_21( );
+  return mu__invariant_23( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_28() // Invariant "Processors in a valid state (S or M) match last write"
+int mu__invariant_30() // Invariant "Processors in a valid state (S or M) match last write"
 {
-bool mu__quant29; 
-mu__quant29 = TRUE;
+bool mu__quant31; 
+mu__quant31 = TRUE;
 {
 for(int mu_n = 1; mu_n <= 3; mu_n++) {
-bool mu__boolexpr30;
-bool mu__boolexpr31;
-  if ((mu_Procs[mu_n].mu_state) == (mu_Proc_S)) mu__boolexpr31 = TRUE ;
+bool mu__boolexpr32;
+bool mu__boolexpr33;
+  if ((mu_Procs[mu_n].mu_state) == (mu_Proc_S)) mu__boolexpr33 = TRUE ;
   else {
-  mu__boolexpr31 = ((mu_Procs[mu_n].mu_state) == (mu_Proc_M)) ; 
+  mu__boolexpr33 = ((mu_Procs[mu_n].mu_state) == (mu_Proc_M)) ; 
 }
-  if (!(mu__boolexpr31)) mu__boolexpr30 = TRUE ;
+  if (!(mu__boolexpr33)) mu__boolexpr32 = TRUE ;
   else {
-  mu__boolexpr30 = ((mu_Procs[mu_n].mu_value) == (mu_LastWrite)) ; 
+  mu__boolexpr32 = ((mu_Procs[mu_n].mu_value) == (mu_LastWrite)) ; 
 }
-if ( !(mu__boolexpr30) )
-  { mu__quant29 = FALSE; break; }
+if ( !(mu__boolexpr32) )
+  { mu__quant31 = FALSE; break; }
 };
 };
-return mu__quant29;
+return mu__quant31;
 };
 
-bool mu__condition_32() // Condition for Rule "Processors in a valid state (S or M) match last write"
+bool mu__condition_34() // Condition for Rule "Processors in a valid state (S or M) match last write"
 {
-  return mu__invariant_28( );
+  return mu__invariant_30( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_33() // Invariant "Values in memory matches value of last write, when shared or invalid"
+int mu__invariant_35() // Invariant "Values in memory matches value of last write, when shared or invalid"
 {
-bool mu__quant34; 
-mu__quant34 = TRUE;
+bool mu__quant36; 
+mu__quant36 = TRUE;
 {
 for(int mu_n = 1; mu_n <= 3; mu_n++) {
-bool mu__boolexpr35;
-bool mu__boolexpr36;
-  if ((mu_DirNode.mu_state) == (mu_Dir_S)) mu__boolexpr36 = TRUE ;
+bool mu__boolexpr37;
+bool mu__boolexpr38;
+  if ((mu_DirNode.mu_state) == (mu_Dir_S)) mu__boolexpr38 = TRUE ;
   else {
-  mu__boolexpr36 = ((mu_DirNode.mu_state) == (mu_Dir_I)) ; 
+  mu__boolexpr38 = ((mu_DirNode.mu_state) == (mu_Dir_I)) ; 
 }
-  if (!(mu__boolexpr36)) mu__boolexpr35 = TRUE ;
+  if (!(mu__boolexpr38)) mu__boolexpr37 = TRUE ;
   else {
-  mu__boolexpr35 = ((mu_DirNode.mu_value) == (mu_LastWrite)) ; 
+  mu__boolexpr37 = ((mu_DirNode.mu_value) == (mu_LastWrite)) ; 
 }
-if ( !(mu__boolexpr35) )
-  { mu__quant34 = FALSE; break; }
+if ( !(mu__boolexpr37) )
+  { mu__quant36 = FALSE; break; }
 };
 };
-return mu__quant34;
+return mu__quant36;
 };
 
-bool mu__condition_37() // Condition for Rule "Values in memory matches value of last write, when shared or invalid"
+bool mu__condition_39() // Condition for Rule "Values in memory matches value of last write, when shared or invalid"
 {
-  return mu__invariant_33( );
+  return mu__invariant_35( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_38() // Invariant "Processor in I state implies the value is undefined"
+int mu__invariant_40() // Invariant "Processor in I state implies the value is undefined"
 {
-bool mu__quant39; 
-mu__quant39 = TRUE;
+bool mu__quant41; 
+mu__quant41 = TRUE;
 {
 for(int mu_n = 1; mu_n <= 3; mu_n++) {
-bool mu__boolexpr40;
-  if (!((mu_Procs[mu_n].mu_state) == (mu_Proc_I))) mu__boolexpr40 = TRUE ;
+bool mu__boolexpr42;
+  if (!((mu_Procs[mu_n].mu_state) == (mu_Proc_I))) mu__boolexpr42 = TRUE ;
   else {
-  mu__boolexpr40 = (mu_Procs[mu_n].mu_value.isundefined()) ; 
+  mu__boolexpr42 = (mu_Procs[mu_n].mu_value.isundefined()) ; 
 }
-if ( !(mu__boolexpr40) )
-  { mu__quant39 = FALSE; break; }
+if ( !(mu__boolexpr42) )
+  { mu__quant41 = FALSE; break; }
 };
 };
-return mu__quant39;
+return mu__quant41;
 };
 
-bool mu__condition_41() // Condition for Rule "Processor in I state implies the value is undefined"
+bool mu__condition_43() // Condition for Rule "Processor in I state implies the value is undefined"
 {
-  return mu__invariant_38( );
+  return mu__invariant_40( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_42() // Invariant "Processor in S state implies the value match memory"
+int mu__invariant_44() // Invariant "Processor in S state implies the value match memory"
 {
-bool mu__quant43; 
-mu__quant43 = TRUE;
+bool mu__quant45; 
+mu__quant45 = TRUE;
 {
 for(int mu_n = 1; mu_n <= 3; mu_n++) {
-bool mu__boolexpr44;
-bool mu__boolexpr45;
-  if (!((mu_DirNode.mu_state) == (mu_Dir_S))) mu__boolexpr45 = FALSE ;
+bool mu__boolexpr46;
+bool mu__boolexpr47;
+  if (!((mu_DirNode.mu_state) == (mu_Dir_S))) mu__boolexpr47 = FALSE ;
   else {
-  mu__boolexpr45 = ((mu_Procs[mu_n].mu_state) == (mu_Proc_S)) ; 
+  mu__boolexpr47 = ((mu_Procs[mu_n].mu_state) == (mu_Proc_S)) ; 
 }
-  if (!(mu__boolexpr45)) mu__boolexpr44 = TRUE ;
+  if (!(mu__boolexpr47)) mu__boolexpr46 = TRUE ;
   else {
-  mu__boolexpr44 = ((mu_DirNode.mu_value) == (mu_Procs[mu_n].mu_value)) ; 
+  mu__boolexpr46 = ((mu_DirNode.mu_value) == (mu_Procs[mu_n].mu_value)) ; 
 }
-if ( !(mu__boolexpr44) )
-  { mu__quant43 = FALSE; break; }
+if ( !(mu__boolexpr46) )
+  { mu__quant45 = FALSE; break; }
 };
 };
-return mu__quant43;
+return mu__quant45;
 };
 
-bool mu__condition_46() // Condition for Rule "Processor in S state implies the value match memory"
+bool mu__condition_48() // Condition for Rule "Processor in S state implies the value match memory"
 {
-  return mu__invariant_42( );
+  return mu__invariant_44( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_47() // Invariant "Directory in S state implies non-empty sharer list"
+int mu__invariant_49() // Invariant "Directory in S state implies non-empty sharer list"
 {
-bool mu__boolexpr48;
-  if (!((mu_DirNode.mu_state) == (mu_Dir_S))) mu__boolexpr48 = TRUE ;
+bool mu__boolexpr50;
+  if (!((mu_DirNode.mu_state) == (mu_Dir_S))) mu__boolexpr50 = TRUE ;
   else {
 /*** begin multisetcount 6 declaration ***/
-  int mu__intexpr49 = 0;
+  int mu__intexpr51 = 0;
   {
   mu_1__type_1_id mu_i;
   for (mu_i = 0; ; mu_i=mu_i+1)
     {
       if (mu_DirNode.mu_sharers.valid[(int)mu_i].value())
         {
-          if ( mu_true ) mu__intexpr49++;
+          if ( mu_true ) mu__intexpr51++;
         }
       if (mu_i == 3-1) break;
     }
   }
 /*** end multisetcount 6 declaration ***/
-  mu__boolexpr48 = ((mu__intexpr49) > (0)) ; 
+  mu__boolexpr50 = ((mu__intexpr51) > (0)) ; 
 }
-return mu__boolexpr48;
+return mu__boolexpr50;
 };
 
-bool mu__condition_50() // Condition for Rule "Directory in S state implies non-empty sharer list"
+bool mu__condition_52() // Condition for Rule "Directory in S state implies non-empty sharer list"
 {
-  return mu__invariant_47( );
+  return mu__invariant_49( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_51() // Invariant "Directory in I or M state implies empty sharer list"
+int mu__invariant_53() // Invariant "Directory in I or M state implies empty sharer list"
 {
-bool mu__boolexpr52;
-bool mu__boolexpr53;
-  if ((mu_DirNode.mu_state) == (mu_Dir_I)) mu__boolexpr53 = TRUE ;
+bool mu__boolexpr54;
+bool mu__boolexpr55;
+  if ((mu_DirNode.mu_state) == (mu_Dir_I)) mu__boolexpr55 = TRUE ;
   else {
-  mu__boolexpr53 = ((mu_DirNode.mu_state) == (mu_Dir_M)) ; 
+  mu__boolexpr55 = ((mu_DirNode.mu_state) == (mu_Dir_M)) ; 
 }
-  if (!(mu__boolexpr53)) mu__boolexpr52 = TRUE ;
+  if (!(mu__boolexpr55)) mu__boolexpr54 = TRUE ;
   else {
 /*** begin multisetcount 5 declaration ***/
-  int mu__intexpr54 = 0;
+  int mu__intexpr56 = 0;
   {
   mu_1__type_1_id mu_i;
   for (mu_i = 0; ; mu_i=mu_i+1)
     {
       if (mu_DirNode.mu_sharers.valid[(int)mu_i].value())
         {
-          if ( mu_true ) mu__intexpr54++;
+          if ( mu_true ) mu__intexpr56++;
         }
       if (mu_i == 3-1) break;
     }
   }
 /*** end multisetcount 5 declaration ***/
-  mu__boolexpr52 = ((mu__intexpr54) == (0)) ; 
+  mu__boolexpr54 = ((mu__intexpr56) == (0)) ; 
 }
-return mu__boolexpr52;
+return mu__boolexpr54;
 };
 
-bool mu__condition_55() // Condition for Rule "Directory in I or M state implies empty sharer list"
+bool mu__condition_57() // Condition for Rule "Directory in I or M state implies empty sharer list"
 {
-  return mu__invariant_51( );
+  return mu__invariant_53( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_56() // Invariant "Directory in M state implies owner exists"
+int mu__invariant_58() // Invariant "Directory in M state implies owner exists"
 {
-bool mu__boolexpr57;
-  if (!((mu_DirNode.mu_state) == (mu_Dir_M))) mu__boolexpr57 = TRUE ;
+bool mu__boolexpr59;
+  if (!((mu_DirNode.mu_state) == (mu_Dir_M))) mu__boolexpr59 = TRUE ;
   else {
-  mu__boolexpr57 = ((mu_DirNode.mu_owner) != (mu_Directory)) ; 
+  mu__boolexpr59 = ((mu_DirNode.mu_owner) != (mu_Directory)) ; 
 }
-return mu__boolexpr57;
+return mu__boolexpr59;
 };
 
-bool mu__condition_58() // Condition for Rule "Directory in M state implies owner exists"
+bool mu__condition_60() // Condition for Rule "Directory in M state implies owner exists"
 {
-  return mu__invariant_56( );
+  return mu__invariant_58( );
 }
 
 /**** end rule declaration ****/
 
-int mu__invariant_59() // Invariant "Directory in I or S state implies empty owner"
+int mu__invariant_61() // Invariant "Directory in I or S state implies empty owner"
 {
-bool mu__boolexpr60;
-bool mu__boolexpr61;
-  if ((mu_DirNode.mu_state) == (mu_Dir_I)) mu__boolexpr61 = TRUE ;
+bool mu__boolexpr62;
+bool mu__boolexpr63;
+  if ((mu_DirNode.mu_state) == (mu_Dir_I)) mu__boolexpr63 = TRUE ;
   else {
-  mu__boolexpr61 = ((mu_DirNode.mu_state) == (mu_Dir_S)) ; 
+  mu__boolexpr63 = ((mu_DirNode.mu_state) == (mu_Dir_S)) ; 
 }
-  if (!(mu__boolexpr61)) mu__boolexpr60 = TRUE ;
+  if (!(mu__boolexpr63)) mu__boolexpr62 = TRUE ;
   else {
-  mu__boolexpr60 = ((mu_DirNode.mu_owner) == (mu_Directory)) ; 
+  mu__boolexpr62 = ((mu_DirNode.mu_owner) == (mu_Directory)) ; 
 }
-return mu__boolexpr60;
+return mu__boolexpr62;
 };
 
-bool mu__condition_62() // Condition for Rule "Directory in I or S state implies empty owner"
+bool mu__condition_64() // Condition for Rule "Directory in I or S state implies empty owner"
 {
-  return mu__invariant_59( );
+  return mu__invariant_61( );
 }
 
 /**** end rule declaration ****/
 
 const rulerec invariants[] = {
-{"Directory in I or S state implies empty owner", &mu__condition_62, NULL, FALSE},
-{"Directory in M state implies owner exists", &mu__condition_58, NULL, FALSE},
-{"Directory in I or M state implies empty sharer list", &mu__condition_55, NULL, FALSE},
-{"Directory in S state implies non-empty sharer list", &mu__condition_50, NULL, FALSE},
-{"Processor in S state implies the value match memory", &mu__condition_46, NULL, FALSE},
-{"Processor in I state implies the value is undefined", &mu__condition_41, NULL, FALSE},
-{"Values in memory matches value of last write, when shared or invalid", &mu__condition_37, NULL, FALSE},
-{"Processors in a valid state (S or M) match last write", &mu__condition_32, NULL, FALSE},
-{"If processor is in Modified state, there are no Sharers", &mu__condition_27, NULL, FALSE},
-{"Invalid Processors are not present on Sharer's List", &mu__condition_20, NULL, FALSE},
+{"Directory in I or S state implies empty owner", &mu__condition_64, NULL, FALSE},
+{"Directory in M state implies owner exists", &mu__condition_60, NULL, FALSE},
+{"Directory in I or M state implies empty sharer list", &mu__condition_57, NULL, FALSE},
+{"Directory in S state implies non-empty sharer list", &mu__condition_52, NULL, FALSE},
+{"Processor in S state implies the value match memory", &mu__condition_48, NULL, FALSE},
+{"Processor in I state implies the value is undefined", &mu__condition_43, NULL, FALSE},
+{"Values in memory matches value of last write, when shared or invalid", &mu__condition_39, NULL, FALSE},
+{"Processors in a valid state (S or M) match last write", &mu__condition_34, NULL, FALSE},
+{"If processor is in Modified state, there are no Sharers", &mu__condition_29, NULL, FALSE},
+{"Invalid Processors are not present on Sharer's List", &mu__condition_22, NULL, FALSE},
 };
 const unsigned short numinvariants = 10;
 
