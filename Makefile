@@ -54,6 +54,10 @@ CFLAGS = -Wno-write-strings -m32
 
 # rules for compiling
 
+out:	$(FILENAME)_mu opt
+	./$(FILENAME) > $(FILENAME).out
+	./$(FILENAME)_opt > $(FILENAME)_opt.out
+
 $(FILENAME):	$(FILENAME)_mu
 	${CXX} ${CFLAGS} ${OFLAGS} -o $@ $@.C -I${INCLUDEPATH} -lm
 

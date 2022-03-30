@@ -35,10 +35,10 @@ type
                       -- Response channel
                       Data,
                       InvAck,
-                      PutAck,
                       InvAllAck,
                       -- Forward channel
                       Inv,
+                      PutAck,
                       FwdGetS,
                       FwdGetM,
                       FwdGetSAck,
@@ -65,13 +65,8 @@ type
                     Dir_I,
                     -- Transition states
                     Dir_MS_D,
-                    -- Dir_MM_A,
-                    Dir_MM_A,
-                    Dir_MS_DA,
                     Dir_SM_A,
                     Dir_MX_A
-                    -- Dir_MX_FwdGetSAck,
-                    -- Dir_MX_FwdGetMAck  
                   };
       owner: Node;	-- Assuming has only one memory location
       value: Value;   -- Assuming has only one memory location
@@ -94,7 +89,7 @@ type
                     Proc_SM_AD,
                     Proc_SI_A,
                     Proc_MI_A,
-
+                    -- Additonal states
                     Proc_IS_DP
                   };
       value: Value;
@@ -223,10 +218,10 @@ Begin
 			DirNode.owner := msg.src;
 			Send(Data, msg.src, Directory, ResponseChannel, DirNode.value, UNDEFINED, cnt);
 		case PutS:
-			Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+			Send(PutAck, msg.src, Directory, ForwardChannel, UNDEFINED, UNDEFINED, 0);
 		case PutM:
 			assert (msg.src != DirNode.owner) "error at Dir_I: PutM from owner";
-			Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+			Send(PutAck, msg.src, Directory, ForwardChannel, UNDEFINED, UNDEFINED, 0);
 		else
 			ErrorUnhandledMsg(msg, Directory);
 		endswitch;
@@ -238,20 +233,22 @@ Begin
       Send(Data, msg.src, Directory, ResponseChannel, DirNode.value, UNDEFINED, 0);
 		case GetM:
       if IsSharer(msg.src) then
+        if cnt = 1 then
+          DirNode.state := Dir_M;
+        else
+          DirNode.state := Dir_SM_A;
+          SendInvReqToSharers(msg.src);
+        endif;
         Send(Data, msg.src, Directory, ResponseChannel, DirNode.value, UNDEFINED, cnt-1);
       else
-        Send(Data, msg.src, Directory, ResponseChannel, DirNode.value, UNDEFINED, cnt);
-      endif;
-      if IsSharer(msg.src) & cnt = 1 then
-        DirNode.state := Dir_M;
-      else
-			  DirNode.state := Dir_SM_A;
+        DirNode.state := Dir_SM_A;
         SendInvReqToSharers(msg.src);
+        Send(Data, msg.src, Directory, ResponseChannel, DirNode.value, UNDEFINED, cnt);
       endif;
       undefine DirNode.sharers;
 			DirNode.owner := msg.src;
 		case PutS:
-			Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);      
+			Send(PutAck, msg.src, Directory, ForwardChannel, UNDEFINED, UNDEFINED, 0);      
       if IsSharer(msg.src) then
         if cnt = 1 then
           DirNode.state := Dir_I;
@@ -260,7 +257,7 @@ Begin
       endif;
 		case PutM:
 			assert (msg.src != DirNode.owner) "error at Dir_S: PutM from owner";
-			Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+			Send(PutAck, msg.src, Directory, ForwardChannel, UNDEFINED, UNDEFINED, 0);
       RemoveFromSharersList(msg.src);
 		else
 			ErrorUnhandledMsg(msg, Directory);
@@ -282,7 +279,7 @@ Begin
       DirNode.value := msg.value;
       DirNode.owner := msg.src;
     case PutS:
-      Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+      Send(PutAck, msg.src, Directory, ForwardChannel, UNDEFINED, UNDEFINED, 0);
     case PutM:
       if DirNode.owner = msg.src then
         DirNode.value := msg.value;
@@ -290,7 +287,7 @@ Begin
         DirNode.owner := Directory;
         DirNode.state := Dir_I;
       endif;
-      Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+      Send(PutAck, msg.src, Directory, ForwardChannel, UNDEFINED, UNDEFINED, 0);
     else
       ErrorUnhandledMsg(msg, Directory);
     endswitch;
@@ -303,11 +300,11 @@ Begin
       msg_processed := false;
     case PutS:
       RemoveFromSharersList(msg.src);
-      Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+      Send(PutAck, msg.src, Directory, ForwardChannel, UNDEFINED, UNDEFINED, 0);
     case PutM:
       assert (msg.src != DirNode.owner) "error at Dir_MS_D: PutM from owner";
       RemoveFromSharersList(msg.src);
-      Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+      Send(PutAck, msg.src, Directory, ForwardChannel, UNDEFINED, UNDEFINED, 0);
     case Data:
       if cnt = 0 then
         DirNode.state := Dir_I;
@@ -417,7 +414,6 @@ Begin
       if msg.src = Directory then -- data is from directory controller
         if msg.ack_cnt = 0 then
           pstate := Proc_M;
-          -- Send(InvAllAck, Directory, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
         else
           assert (pcnt <= 0) "error at Proc_IM_AD, ack_cnt > 0.";
           pcnt :=  pcnt + msg.ack_cnt;
@@ -482,7 +478,6 @@ Begin
       assert (msg.src = Directory) "error at Proc_SM_AD, Data not from dir.";
       if msg.ack_cnt = 0 then
         pstate := Proc_M;
-        -- Send(InvAllAck, Directory, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       else
         assert (pcnt <= 0) "error at Proc_SM_AD, ack_cnt > 0.";
         pcnt :=  pcnt + msg.ack_cnt;

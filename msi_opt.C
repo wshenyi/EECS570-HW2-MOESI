@@ -1,5 +1,5 @@
 /******************************
-  Program "msi.m" compiled by "Murphi Release 3.1"
+  Program "msi_opt.m" compiled by "Murphi Release 3.1"
 
   Murphi Last Modefied Date: "Jan 29 1999"
   Murphi Last Compiled date: "Mar 18 2022"
@@ -10,8 +10,8 @@
  ********************/
 #define MURPHI_VERSION "Murphi Release 3.1"
 #define MURPHI_DATE "Jan 29 1999"
-#define PROTOCOL_NAME "msi"
-#define BITS_IN_WORLD 2376
+#define PROTOCOL_NAME "msi_opt"
+#define BITS_IN_WORLD 3376
 #define ALIGN
 
 /********************
@@ -38,9 +38,9 @@ class mu_1_Proc: public mu__byte
         return ( s << "Undefined" );
     };
 
-  mu_1_Proc (char *name, int os): mu__byte(1, 3, 2, name, os) {};
-  mu_1_Proc (void): mu__byte(1, 3, 2) {};
-  mu_1_Proc (int val): mu__byte(1, 3, 2, "Parameter or function result.", 0)
+  mu_1_Proc (char *name, int os): mu__byte(1, 4, 3, name, os) {};
+  mu_1_Proc (void): mu__byte(1, 4, 3) {};
+  mu_1_Proc (int val): mu__byte(1, 4, 3, "Parameter or function result.", 0)
     { operator=(val); };
   char * Name() { return values[ value() -1]; };
   virtual void print()
@@ -67,7 +67,7 @@ friend int CompareWeight(mu_1_Proc& a, mu_1_Proc& b)
   virtual void MultisetLimit(PermSet& Perm);
 };
 char *mu_1_Proc::values[] =
-  { "Proc_1","Proc_2","Proc_3",NULL };
+  { "Proc_1","Proc_2","Proc_3","Proc_4",NULL };
 
 /*** end scalarset declaration ***/
 mu_1_Proc mu_1_Proc_undefined_var;
@@ -82,19 +82,19 @@ class mu_1_Value: public mu__byte
   friend ostream& operator<< (ostream& s, mu_1_Value& val)
     {
       if (val.defined())
-        return ( s << mu_1_Value::values[ int(val) - 4 ] );
+        return ( s << mu_1_Value::values[ int(val) - 5 ] );
       else
         return ( s << "Undefined" );
     };
 
-  mu_1_Value (char *name, int os): mu__byte(4, 5, 2, name, os) {};
-  mu_1_Value (void): mu__byte(4, 5, 2) {};
-  mu_1_Value (int val): mu__byte(4, 5, 2, "Parameter or function result.", 0)
+  mu_1_Value (char *name, int os): mu__byte(5, 7, 2, name, os) {};
+  mu_1_Value (void): mu__byte(5, 7, 2) {};
+  mu_1_Value (int val): mu__byte(5, 7, 2, "Parameter or function result.", 0)
     { operator=(val); };
-  char * Name() { return values[ value() -4]; };
+  char * Name() { return values[ value() -5]; };
   virtual void print()
     {
-      if (defined()) cout << name << ':' << values[ value() - 4] << '\n';
+      if (defined()) cout << name << ':' << values[ value() - 5] << '\n';
       else cout << name << ":Undefined\n";
     };
   void print_statistic() {};
@@ -116,7 +116,7 @@ friend int CompareWeight(mu_1_Value& a, mu_1_Value& b)
   virtual void MultisetLimit(PermSet& Perm);
 };
 char *mu_1_Value::values[] =
-  { "Value_1","Value_2",NULL };
+  { "Value_1","Value_2","Value_3",NULL };
 
 /*** end scalarset declaration ***/
 mu_1_Value mu_1_Value_undefined_var;
@@ -130,17 +130,17 @@ class mu_1_Dir: public mu__byte
   friend ostream& operator<< (ostream& s, mu_1_Dir& val)
   {
     if (val.defined())
-      return ( s << mu_1_Dir::values[ int(val) - 6] );
+      return ( s << mu_1_Dir::values[ int(val) - 8] );
     else return ( s << "Undefined" );
   };
 
-  mu_1_Dir (char *name, int os): mu__byte(6, 6, 1, name, os) {};
-  mu_1_Dir (void): mu__byte(6, 6, 1) {};
-  mu_1_Dir (int val): mu__byte(6, 6, 1, "Parameter or function result.", 0)
+  mu_1_Dir (char *name, int os): mu__byte(8, 8, 1, name, os) {};
+  mu_1_Dir (void): mu__byte(8, 8, 1) {};
+  mu_1_Dir (int val): mu__byte(8, 8, 1, "Parameter or function result.", 0)
   {
      operator=(val);
   };
-  char * Name() { return values[ value() -6]; };
+  char * Name() { return values[ value() -8]; };
   virtual void Permute(PermSet& Perm, int i);
   virtual void SimpleCanonicalize(PermSet& Perm);
   virtual void Canonicalize(PermSet& Perm);
@@ -153,7 +153,7 @@ class mu_1_Dir: public mu__byte
   virtual void print()
   {
     if (defined())
-      cout << name << ":" << values[ value() -6] << '\n';
+      cout << name << ":" << values[ value() -8] << '\n';
     else
       cout << name << ":Undefined\n";
   };
@@ -180,19 +180,19 @@ class mu_1_Node: public mu__byte
     };
 
   // note thate lb and ub are not used if we have byte compacted state.
-  mu_1_Node (char *name, int os): mu__byte(0, 3, 3, name, os) {};
-  mu_1_Node (void): mu__byte(0, 3, 3) {};
-  mu_1_Node (int val): mu__byte(0, 3, 3, "Parameter or function result.", 0)
+  mu_1_Node (char *name, int os): mu__byte(0, 4, 3, name, os) {};
+  mu_1_Node (void): mu__byte(0, 4, 3) {};
+  mu_1_Node (int val): mu__byte(0, 4, 3, "Parameter or function result.", 0)
     { operator=(val); };
   int indexvalue()
   {
-    if ((value() >= 6) && (value() <= 6)) return (value() - 6);
-    if ((value() >= 1) && (value() <= 3)) return (value() - 0);
+    if ((value() >= 8) && (value() <= 8)) return (value() - 8);
+    if ((value() >= 1) && (value() <= 4)) return (value() - 0);
   };
   inline int unionassign(int val)
   {
-    if (val >= 0 && val <= 0) return value(val+6);
-    if (val >= 1 && val <= 3) return value(val+0);
+    if (val >= 0 && val <= 0) return value(val+8);
+    if (val >= 1 && val <= 4) return value(val+0);
   };
   char * Name() { return values[ indexvalue() ]; };
 friend int CompareWeight(mu_1_Node& a, mu_1_Node& b)
@@ -218,7 +218,7 @@ friend int CompareWeight(mu_1_Node& a, mu_1_Node& b)
     };
   void print_statistic() {};
 };
-char *mu_1_Node::values[] = {"Directory","Proc_1","Proc_2","Proc_3",NULL };
+char *mu_1_Node::values[] = {"Directory","Proc_1","Proc_2","Proc_3","Proc_4",NULL };
 
 /*** end union declaration ***/
 mu_1_Node mu_1_Node_undefined_var;
@@ -254,9 +254,9 @@ class mu_1_AckCount: public mu__long
  public:
   inline int operator=(int val) { return mu__long::operator=(val); };
   inline int operator=(const mu_1_AckCount& val) { return mu__long::operator=((int) val); };
-  mu_1_AckCount (char *name, int os): mu__long(-2, 2, 3, name, os) {};
-  mu_1_AckCount (void): mu__long(-2, 2, 3) {};
-  mu_1_AckCount (int val): mu__long(-2, 2, 3, "Parameter or function result.", 0)
+  mu_1_AckCount (char *name, int os): mu__long(-3, 3, 3, name, os) {};
+  mu_1_AckCount (void): mu__long(-3, 3, 3) {};
+  mu_1_AckCount (int val): mu__long(-3, 3, 3, "Parameter or function result.", 0)
   {
     operator=(val);
   };
@@ -284,17 +284,17 @@ class mu_1_MessageType: public mu__byte
   friend ostream& operator<< (ostream& s, mu_1_MessageType& val)
   {
     if (val.defined())
-      return ( s << mu_1_MessageType::values[ int(val) - 7] );
+      return ( s << mu_1_MessageType::values[ int(val) - 9] );
     else return ( s << "Undefined" );
   };
 
-  mu_1_MessageType (char *name, int os): mu__byte(7, 19, 4, name, os) {};
-  mu_1_MessageType (void): mu__byte(7, 19, 4) {};
-  mu_1_MessageType (int val): mu__byte(7, 19, 4, "Parameter or function result.", 0)
+  mu_1_MessageType (char *name, int os): mu__byte(9, 21, 4, name, os) {};
+  mu_1_MessageType (void): mu__byte(9, 21, 4) {};
+  mu_1_MessageType (int val): mu__byte(9, 21, 4, "Parameter or function result.", 0)
   {
      operator=(val);
   };
-  char * Name() { return values[ value() -7]; };
+  char * Name() { return values[ value() -9]; };
   virtual void Permute(PermSet& Perm, int i);
   virtual void SimpleCanonicalize(PermSet& Perm);
   virtual void Canonicalize(PermSet& Perm);
@@ -307,7 +307,7 @@ class mu_1_MessageType: public mu__byte
   virtual void print()
   {
     if (defined())
-      cout << name << ":" << values[ value() -7] << '\n';
+      cout << name << ":" << values[ value() -9] << '\n';
     else
       cout << name << ":Undefined\n";
   };
@@ -497,17 +497,17 @@ class mu_1__type_0: public mu__byte
   friend ostream& operator<< (ostream& s, mu_1__type_0& val)
   {
     if (val.defined())
-      return ( s << mu_1__type_0::values[ int(val) - 20] );
+      return ( s << mu_1__type_0::values[ int(val) - 22] );
     else return ( s << "Undefined" );
   };
 
-  mu_1__type_0 (char *name, int os): mu__byte(20, 25, 3, name, os) {};
-  mu_1__type_0 (void): mu__byte(20, 25, 3) {};
-  mu_1__type_0 (int val): mu__byte(20, 25, 3, "Parameter or function result.", 0)
+  mu_1__type_0 (char *name, int os): mu__byte(22, 27, 3, name, os) {};
+  mu_1__type_0 (void): mu__byte(22, 27, 3) {};
+  mu_1__type_0 (int val): mu__byte(22, 27, 3, "Parameter or function result.", 0)
   {
      operator=(val);
   };
-  char * Name() { return values[ value() -20]; };
+  char * Name() { return values[ value() -22]; };
   virtual void Permute(PermSet& Perm, int i);
   virtual void SimpleCanonicalize(PermSet& Perm);
   virtual void Canonicalize(PermSet& Perm);
@@ -520,7 +520,7 @@ class mu_1__type_0: public mu__byte
   virtual void print()
   {
     if (defined())
-      cout << name << ":" << values[ value() -20] << '\n';
+      cout << name << ":" << values[ value() -22] << '\n';
     else
       cout << name << ":Undefined\n";
   };
@@ -538,18 +538,18 @@ class mu_1__type_1_id: public mu__byte
   inline int operator=(int val) { return value(val); };
   inline int operator=(const mu_1__type_1_id& val) { return value(val.value()); };
   inline operator int() const { return value(); };
-  mu_1__type_1_id () : mu__byte(0,2,0) {};
-  mu_1__type_1_id (int val) : mu__byte(0,2,0, "Parameter or function result.",0) {operator=(val); };
+  mu_1__type_1_id () : mu__byte(0,3,0) {};
+  mu_1__type_1_id (int val) : mu__byte(0,3,0, "Parameter or function result.",0) {operator=(val); };
   char * Name() { return tsprintf("%d", value()); };
 };
 class mu_1__type_1
 {
  public:
-  mu_1_Node array[ 3 ];
+  mu_1_Node array[ 4 ];
   int max_size;
   int current_size;
  public:
-  mu_0_boolean valid[ 3 ];
+  mu_0_boolean valid[ 4 ];
   char *name;
   char longname[BUFFER_SIZE/4];
   void set_self( char *n, int os);
@@ -560,7 +560,7 @@ class mu_1__type_1
   virtual ~mu_1__type_1 ();
   mu_1_Node& operator[] (int index) /* const */
   {
-    if ((index >= 0) && (index <= 2) && valid[index].value())
+    if ((index >= 0) && (index <= 3) && valid[index].value())
       return array[ index ];
     else {
       Error.Error("Internal Error::%d not in index range of %s.", index, name);
@@ -569,7 +569,7 @@ class mu_1__type_1
   };
   mu_1__type_1& operator= (const mu_1__type_1& from)
   {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
     {
         array[i].value(from.array[i].value());
         valid[i].value(from.valid[i].value());
@@ -585,7 +585,7 @@ friend int CompareWeight(mu_1__type_1& a, mu_1__type_1& b)
 friend int Compare(mu_1__type_1& a, mu_1__type_1& b)
   {
     int w;
-    for (int i=0; i<3; i++) {
+    for (int i=0; i<4; i++) {
       w = Compare(a.array[i], b.array[i]);
       if (w!=0) return w;
     }
@@ -598,15 +598,15 @@ friend int Compare(mu_1__type_1& a, mu_1__type_1& b)
   virtual void ArrayLimit(PermSet& Perm);
   virtual void Limit(PermSet& Perm);
   virtual void MultisetLimit(PermSet& Perm);
-  void clear() { for (int i = 0; i < 3; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
+  void clear() { for (int i = 0; i < 4; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
 
-  void undefine() { for (int i = 0; i < 3; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
+  void undefine() { for (int i = 0; i < 4; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
 
-  void reset() { for (int i = 0; i < 3; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
+  void reset() { for (int i = 0; i < 4; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
 
   void to_state(state *thestate)
   {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
      {
        array[i].to_state(thestate);
        valid[i].to_state(thestate);
@@ -615,7 +615,7 @@ friend int Compare(mu_1__type_1& a, mu_1__type_1& b)
 
   int get_current_size() const  {
     int tmp = 0;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
       if (valid[i].value()) tmp++;
     return tmp;
   };
@@ -623,7 +623,7 @@ friend int Compare(mu_1__type_1& a, mu_1__type_1& b)
    void update_size()
   {
     current_size = 0;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
       if (valid[i].value()) current_size++;
     if (max_size<current_size) max_size = current_size;
   };
@@ -632,7 +632,7 @@ friend int Compare(mu_1__type_1& a, mu_1__type_1& b)
   { return valid[(int)id].value(); }
   void print()
   {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
       if (valid[i].value())
         array[i].print();
   };
@@ -647,7 +647,7 @@ friend int Compare(mu_1__type_1& a, mu_1__type_1& b)
     bool prevvalid;
     static state temp;
     StateCopy(&temp, workingstate);
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
       {
         StateCopy(workingstate, prevstate);
         prevvalid = valid[i].value();
@@ -663,9 +663,9 @@ friend int Compare(mu_1__type_1& a, mu_1__type_1& b)
   int multisetadd(const mu_1_Node &element)
   {
     update_size();
-    if (current_size >= 3) Error.Error("Maximum size of MultiSet (%s) exceeded.",name);
+    if (current_size >= 4) Error.Error("Maximum size of MultiSet (%s) exceeded.",name);
     int i;
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < 4; i++)
       if (!valid[i].value())
         {
           array[i] = element;
@@ -689,7 +689,7 @@ friend int Compare(mu_1__type_1& a, mu_1__type_1& b)
 
     // compact
     int i,j;
-    for (i = 0, j = 0; i < 3; i++)
+    for (i = 0, j = 0; i < 4; i++)
       if (valid[i].value())
         {
           if (j!=i)
@@ -698,11 +698,11 @@ friend int Compare(mu_1__type_1& a, mu_1__type_1& b)
             j++;
         }
     if (j != current_size) current_size = j;
-    for (i = j; i < 3; i++)
+    for (i = j; i < 4; i++)
       array[i].undefine();
     for (i = 0; i < j; i++)
       valid[i].value(TRUE);
-    for (i = j; i < 3; i++)
+    for (i = j; i < 4; i++)
       valid[i].value(FALSE);
 
     // bubble sort
@@ -735,10 +735,10 @@ void mu_1__type_1::set_self( char *n, int os)
 {
   int i,k;
   name = n;
-  for(i = 0; i < 3; i++)
+  for(i = 0; i < 4; i++)
     array[i].set_self(tsprintf("%s{%d}", n,i), i * 8 + os);
   k = os + i * 8;
-  for(i = 0; i < 3; i++)
+  for(i = 0; i < 4; i++)
     valid[i].set_self("", i * 8 + k);
 };
 mu_1__type_1::~mu_1__type_1()
@@ -896,17 +896,17 @@ class mu_1__type_2: public mu__byte
   friend ostream& operator<< (ostream& s, mu_1__type_2& val)
   {
     if (val.defined())
-      return ( s << mu_1__type_2::values[ int(val) - 26] );
+      return ( s << mu_1__type_2::values[ int(val) - 28] );
     else return ( s << "Undefined" );
   };
 
-  mu_1__type_2 (char *name, int os): mu__byte(26, 37, 4, name, os) {};
-  mu_1__type_2 (void): mu__byte(26, 37, 4) {};
-  mu_1__type_2 (int val): mu__byte(26, 37, 4, "Parameter or function result.", 0)
+  mu_1__type_2 (char *name, int os): mu__byte(28, 39, 4, name, os) {};
+  mu_1__type_2 (void): mu__byte(28, 39, 4) {};
+  mu_1__type_2 (int val): mu__byte(28, 39, 4, "Parameter or function result.", 0)
   {
      operator=(val);
   };
-  char * Name() { return values[ value() -26]; };
+  char * Name() { return values[ value() -28]; };
   virtual void Permute(PermSet& Perm, int i);
   virtual void SimpleCanonicalize(PermSet& Perm);
   virtual void Canonicalize(PermSet& Perm);
@@ -919,7 +919,7 @@ class mu_1__type_2: public mu__byte
   virtual void print()
   {
     if (defined())
-      cout << name << ":" << values[ value() -26] << '\n';
+      cout << name << ":" << values[ value() -28] << '\n';
     else
       cout << name << ":Undefined\n";
   };
@@ -1058,7 +1058,7 @@ mu_1_ProcState mu_1_ProcState_undefined_var;
 class mu_1__type_3
 {
  public:
-  mu_1_ProcState array[ 3 ];
+  mu_1_ProcState array[ 4 ];
  public:
   char *name;
   char longname[BUFFER_SIZE/4];
@@ -1071,14 +1071,14 @@ class mu_1__type_3
   mu_1_ProcState& operator[] (int index) /* const */
   {
 #ifndef NO_RUN_TIME_CHECKING
-    if ( ( index >= 1 ) && ( index <= 3 ) )
+    if ( ( index >= 1 ) && ( index <= 4 ) )
       return array[ index - 1 ];
     else
       {
         if (index==UNDEFVAL) 
           Error.Error("Indexing to %s using an undefined value.", name);
         else
-          Error.Error("Funny index value %d for %s: Proc is internally represented from 3 to 1.\nInternal Error in Type checking.",index, name);
+          Error.Error("Funny index value %d for %s: Proc is internally represented from 4 to 1.\nInternal Error in Type checking.",index, name);
         return array[0];
       }
 #else
@@ -1087,7 +1087,7 @@ class mu_1__type_3
   };
   mu_1__type_3& operator= (const mu_1__type_3& from)
   {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
       array[i] = from.array[i];
     return *this;
   }
@@ -1097,336 +1097,6 @@ friend int CompareWeight(mu_1__type_3& a, mu_1__type_3& b)
     return 0;
   }
 friend int Compare(mu_1__type_3& a, mu_1__type_3& b)
-  {
-    int w;
-    for (int i=0; i<3; i++) {
-      w = Compare(a.array[i], b.array[i]);
-      if (w!=0) return w;
-    }
-    return 0;
-  }
-  virtual void Permute(PermSet& Perm, int i);
-  virtual void SimpleCanonicalize(PermSet& Perm);
-  virtual void Canonicalize(PermSet& Perm);
-  virtual void SimpleLimit(PermSet& Perm);
-  virtual void ArrayLimit(PermSet& Perm);
-  virtual void Limit(PermSet& Perm);
-  virtual void MultisetLimit(PermSet& Perm);
-  virtual void MultisetSort()
-  {
-    for (int i=0; i<3; i++)
-      array[i].MultisetSort();
-  }
-  void print_statistic()
-  {
-    for (int i=0; i<3; i++)
-      array[i].print_statistic();
-  }
-  void clear() { for (int i = 0; i < 3; i++) array[i].clear(); };
-
-  void undefine() { for (int i = 0; i < 3; i++) array[i].undefine(); };
-
-  void reset() { for (int i = 0; i < 3; i++) array[i].reset(); };
-
-  void to_state(state *thestate)
-  {
-    for (int i = 0; i < 3; i++)
-      array[i].to_state(thestate);
-  };
-
-  void print()
-  {
-    for (int i = 0; i < 3; i++)
-      array[i].print(); };
-
-  void print_diff(state *prevstate)
-  {
-    for (int i = 0; i < 3; i++)
-      array[i].print_diff(prevstate);
-  };
-};
-
-  void mu_1__type_3::set_self_ar( char *n1, char *n2, int os ) {
-    int l1 = strlen(n1), l2 = strlen(n2);
-    strcpy( longname, n1 );
-    longname[l1] = '[';
-    strcpy( longname+l1+1, n2 );
-    longname[l1+l2+1] = ']';
-    longname[l1+l2+2] = 0;
-    set_self( longname, os );
-  };
-  void mu_1__type_3::set_self_2( char *n1, char *n2, int os ) {
-    strcpy( longname, n1 );
-    strcat( longname, n2 );
-    set_self( longname, os );
-  };
-void mu_1__type_3::set_self( char *n, int os)
-  {
-    int i=0;
-    name = n;
-array[i].set_self_ar(n,"Proc_1", i * 48 + os);i++;
-array[i].set_self_ar(n,"Proc_2", i * 48 + os);i++;
-array[i].set_self_ar(n,"Proc_3", i * 48 + os);i++;
-}
-mu_1__type_3::~mu_1__type_3()
-{
-}
-/*** end array declaration ***/
-mu_1__type_3 mu_1__type_3_undefined_var;
-
-/*** begin multiset declaration ***/
-class mu_1__type_4_id: public mu__byte
-{
- public:
-  inline int operator=(int val) { return value(val); };
-  inline int operator=(const mu_1__type_4_id& val) { return value(val.value()); };
-  inline operator int() const { return value(); };
-  mu_1__type_4_id () : mu__byte(0,3,0) {};
-  mu_1__type_4_id (int val) : mu__byte(0,3,0, "Parameter or function result.",0) {operator=(val); };
-  char * Name() { return tsprintf("%d", value()); };
-};
-class mu_1__type_4
-{
- public:
-  mu_1_Message array[ 4 ];
-  int max_size;
-  int current_size;
- public:
-  mu_0_boolean valid[ 4 ];
-  char *name;
-  char longname[BUFFER_SIZE/4];
-  void set_self( char *n, int os);
-  void set_self_2( char *n, char *n2, int os);
-  void set_self_ar( char *n, char *n2, int os);
-  mu_1__type_4 (char *n, int os): current_size(0), max_size(0) { set_self(n, os); };
-  mu_1__type_4 ( void ): current_size(0), max_size(0) {};
-  virtual ~mu_1__type_4 ();
-  mu_1_Message& operator[] (int index) /* const */
-  {
-    if ((index >= 0) && (index <= 3) && valid[index].value())
-      return array[ index ];
-    else {
-      Error.Error("Internal Error::%d not in index range of %s.", index, name);
-      return array[0];
-    }
-  };
-  mu_1__type_4& operator= (const mu_1__type_4& from)
-  {
-    for (int i = 0; i < 4; i++)
-    {
-       array[i] = from.array[i];
-       valid[i].value(from.valid[i].value());
-    };
-    current_size = from.get_current_size();
-    return *this;
-  }
-
-friend int CompareWeight(mu_1__type_4& a, mu_1__type_4& b)
-  {
-    return 0;
-  }
-friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
-  {
-    int w;
-    for (int i=0; i<4; i++) {
-      w = Compare(a.array[i], b.array[i]);
-      if (w!=0) return w;
-    }
-    return 0;
-  }
-  virtual void Permute(PermSet& Perm, int i);
-  virtual void SimpleCanonicalize(PermSet& Perm);
-  virtual void Canonicalize(PermSet& Perm);
-  virtual void SimpleLimit(PermSet& Perm);
-  virtual void ArrayLimit(PermSet& Perm);
-  virtual void Limit(PermSet& Perm);
-  virtual void MultisetLimit(PermSet& Perm);
-  void clear() { for (int i = 0; i < 4; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
-
-  void undefine() { for (int i = 0; i < 4; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
-
-  void reset() { for (int i = 0; i < 4; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
-
-  void to_state(state *thestate)
-  {
-    for (int i = 0; i < 4; i++)
-     {
-       array[i].to_state(thestate);
-       valid[i].to_state(thestate);
-     }
-  };
-
-  int get_current_size() const  {
-    int tmp = 0;
-    for (int i = 0; i < 4; i++)
-      if (valid[i].value()) tmp++;
-    return tmp;
-  };
-
-   void update_size()
-  {
-    current_size = 0;
-    for (int i = 0; i < 4; i++)
-      if (valid[i].value()) current_size++;
-    if (max_size<current_size) max_size = current_size;
-  };
-
-   inline bool in(const mu_1__type_4_id& id)
-  { return valid[(int)id].value(); }
-  void print()
-  {
-    for (int i = 0; i < 4; i++)
-      if (valid[i].value())
-        array[i].print();
-  };
-
-  void print_statistic()
-  {
-    cout << "	The maximum size for the multiset \"" 
-         << name << "\" is: " << max_size << ".\n"; 
-  };
-  void print_diff(state *prevstate)
-  {
-    bool prevvalid;
-    static state temp;
-    StateCopy(&temp, workingstate);
-    for (int i = 0; i < 4; i++)
-      {
-        StateCopy(workingstate, prevstate);
-        prevvalid = valid[i].value();
-        StateCopy(workingstate, &temp);
-        if (prevvalid && !valid[i].value())
-          array[i].print();
-        if (!prevvalid && valid[i].value())
-          array[i].print();
-        if (prevvalid && valid[i].value())
-          array[i].print_diff(prevstate);
-      }
-  };
-  int multisetadd(const mu_1_Message &element)
-  {
-    update_size();
-    if (current_size >= 4) Error.Error("Maximum size of MultiSet (%s) exceeded.",name);
-    int i;
-    for (i = 0; i < 4; i++)
-      if (!valid[i].value())
-        {
-          array[i] = element;
-          valid[i].value(TRUE);
-          break;
-        }
-    current_size++;
-    return i;
-  };
-  void multisetremove(const mu_1__type_4_id &id)
-  {
-    update_size();
-    if (!valid[(int)id].value()) Error.Error("Internal Error: Illegal Multiset element selected.");
-    valid[(int)id].value(FALSE);
-    array[(int)id].undefine();
-    current_size--;
-  };
-  void MultisetSort()
-  {
-    static mu_1_Message temp;
-
-    // compact
-    int i,j;
-    for (i = 0, j = 0; i < 4; i++)
-      if (valid[i].value())
-        {
-          if (j!=i)
-            array[j++] = array[i];
-          else
-            j++;
-        }
-    if (j != current_size) current_size = j;
-    for (i = j; i < 4; i++)
-      array[i].undefine();
-    for (i = 0; i < j; i++)
-      valid[i].value(TRUE);
-    for (i = j; i < 4; i++)
-      valid[i].value(FALSE);
-
-    // bubble sort
-    for (i = 0; i < current_size; i++)
-      for (j = i+1; j < current_size; j++)
-        if (Compare(array[i],array[j])>0)
-          {
-            temp = array[i];
-            array[i] = array[j];
-            array[j] = temp;
-          }
-  }
-};
-
-  void mu_1__type_4::set_self_ar( char *n1, char *n2, int os ) {
-    int l1 = strlen(n1), l2 = strlen(n2);
-    strcpy( longname, n1 );
-    longname[l1] = '[';
-    strcpy( longname+l1+1, n2 );
-    longname[l1+l2+1] = ']';
-    longname[l1+l2+2] = 0;
-    set_self( longname, os );
-  };
-  void mu_1__type_4::set_self_2( char *n1, char *n2, int os ) {
-    strcpy( longname, n1 );
-    strcat( longname, n2 );
-    set_self( longname, os );
-  };
-void mu_1__type_4::set_self( char *n, int os)
-{
-  int i,k;
-  name = n;
-  for(i = 0; i < 4; i++)
-    array[i].set_self(tsprintf("%s{%d}", n,i), i * 72 + os);
-  k = os + i * 72;
-  for(i = 0; i < 4; i++)
-    valid[i].set_self("", i * 8 + k);
-};
-mu_1__type_4::~mu_1__type_4()
-{
-}
-/*** end multiset declaration ***/
-mu_1__type_4 mu_1__type_4_undefined_var;
-
-class mu_1__type_5
-{
- public:
-  mu_1__type_4 array[ 4 ];
- public:
-  char *name;
-  char longname[BUFFER_SIZE/4];
-  void set_self( char *n, int os);
-  void set_self_2( char *n, char *n2, int os);
-  void set_self_ar( char *n, char *n2, int os);
-  mu_1__type_5 (char *n, int os) { set_self(n, os); };
-  mu_1__type_5 ( void ) {};
-  virtual ~mu_1__type_5 ();
-  mu_1__type_4& operator[] (int index) /* const */
-  {
-    if ( ( index >= 6 ) && ( index <= 6 ) )
-      return array[ index - (6) ];
-    if ( ( index >= 1 ) && ( index <= 3 ) )
-      return array[ index - (0) ];
-    if (index==UNDEFVAL) 
-      Error.Error("Indexing to %s using an undefined value.", name);
-    else
-      Error.Error("Funny index value %d for %s. (Internal Error in Type Checking.",index, name);
-    return array[0];
-  }
-  mu_1__type_5& operator= (const mu_1__type_5& from)
-  {
-    for (int i = 0; i < 4; i++)
-      array[i] = from.array[i];
-    return *this;
-  }
-
-friend int CompareWeight(mu_1__type_5& a, mu_1__type_5& b)
-  {
-    return 0;
-  }
-friend int Compare(mu_1__type_5& a, mu_1__type_5& b)
   {
     int w;
     for (int i=0; i<4; i++) {
@@ -1476,6 +1146,337 @@ friend int Compare(mu_1__type_5& a, mu_1__type_5& b)
   };
 };
 
+  void mu_1__type_3::set_self_ar( char *n1, char *n2, int os ) {
+    int l1 = strlen(n1), l2 = strlen(n2);
+    strcpy( longname, n1 );
+    longname[l1] = '[';
+    strcpy( longname+l1+1, n2 );
+    longname[l1+l2+1] = ']';
+    longname[l1+l2+2] = 0;
+    set_self( longname, os );
+  };
+  void mu_1__type_3::set_self_2( char *n1, char *n2, int os ) {
+    strcpy( longname, n1 );
+    strcat( longname, n2 );
+    set_self( longname, os );
+  };
+void mu_1__type_3::set_self( char *n, int os)
+  {
+    int i=0;
+    name = n;
+array[i].set_self_ar(n,"Proc_1", i * 48 + os);i++;
+array[i].set_self_ar(n,"Proc_2", i * 48 + os);i++;
+array[i].set_self_ar(n,"Proc_3", i * 48 + os);i++;
+array[i].set_self_ar(n,"Proc_4", i * 48 + os);i++;
+}
+mu_1__type_3::~mu_1__type_3()
+{
+}
+/*** end array declaration ***/
+mu_1__type_3 mu_1__type_3_undefined_var;
+
+/*** begin multiset declaration ***/
+class mu_1__type_4_id: public mu__byte
+{
+ public:
+  inline int operator=(int val) { return value(val); };
+  inline int operator=(const mu_1__type_4_id& val) { return value(val.value()); };
+  inline operator int() const { return value(); };
+  mu_1__type_4_id () : mu__byte(0,4,0) {};
+  mu_1__type_4_id (int val) : mu__byte(0,4,0, "Parameter or function result.",0) {operator=(val); };
+  char * Name() { return tsprintf("%d", value()); };
+};
+class mu_1__type_4
+{
+ public:
+  mu_1_Message array[ 5 ];
+  int max_size;
+  int current_size;
+ public:
+  mu_0_boolean valid[ 5 ];
+  char *name;
+  char longname[BUFFER_SIZE/4];
+  void set_self( char *n, int os);
+  void set_self_2( char *n, char *n2, int os);
+  void set_self_ar( char *n, char *n2, int os);
+  mu_1__type_4 (char *n, int os): current_size(0), max_size(0) { set_self(n, os); };
+  mu_1__type_4 ( void ): current_size(0), max_size(0) {};
+  virtual ~mu_1__type_4 ();
+  mu_1_Message& operator[] (int index) /* const */
+  {
+    if ((index >= 0) && (index <= 4) && valid[index].value())
+      return array[ index ];
+    else {
+      Error.Error("Internal Error::%d not in index range of %s.", index, name);
+      return array[0];
+    }
+  };
+  mu_1__type_4& operator= (const mu_1__type_4& from)
+  {
+    for (int i = 0; i < 5; i++)
+    {
+       array[i] = from.array[i];
+       valid[i].value(from.valid[i].value());
+    };
+    current_size = from.get_current_size();
+    return *this;
+  }
+
+friend int CompareWeight(mu_1__type_4& a, mu_1__type_4& b)
+  {
+    return 0;
+  }
+friend int Compare(mu_1__type_4& a, mu_1__type_4& b)
+  {
+    int w;
+    for (int i=0; i<5; i++) {
+      w = Compare(a.array[i], b.array[i]);
+      if (w!=0) return w;
+    }
+    return 0;
+  }
+  virtual void Permute(PermSet& Perm, int i);
+  virtual void SimpleCanonicalize(PermSet& Perm);
+  virtual void Canonicalize(PermSet& Perm);
+  virtual void SimpleLimit(PermSet& Perm);
+  virtual void ArrayLimit(PermSet& Perm);
+  virtual void Limit(PermSet& Perm);
+  virtual void MultisetLimit(PermSet& Perm);
+  void clear() { for (int i = 0; i < 5; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
+
+  void undefine() { for (int i = 0; i < 5; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
+
+  void reset() { for (int i = 0; i < 5; i++) { array[i].undefine(); valid[i].value(FALSE); } current_size = 0; };
+
+  void to_state(state *thestate)
+  {
+    for (int i = 0; i < 5; i++)
+     {
+       array[i].to_state(thestate);
+       valid[i].to_state(thestate);
+     }
+  };
+
+  int get_current_size() const  {
+    int tmp = 0;
+    for (int i = 0; i < 5; i++)
+      if (valid[i].value()) tmp++;
+    return tmp;
+  };
+
+   void update_size()
+  {
+    current_size = 0;
+    for (int i = 0; i < 5; i++)
+      if (valid[i].value()) current_size++;
+    if (max_size<current_size) max_size = current_size;
+  };
+
+   inline bool in(const mu_1__type_4_id& id)
+  { return valid[(int)id].value(); }
+  void print()
+  {
+    for (int i = 0; i < 5; i++)
+      if (valid[i].value())
+        array[i].print();
+  };
+
+  void print_statistic()
+  {
+    cout << "	The maximum size for the multiset \"" 
+         << name << "\" is: " << max_size << ".\n"; 
+  };
+  void print_diff(state *prevstate)
+  {
+    bool prevvalid;
+    static state temp;
+    StateCopy(&temp, workingstate);
+    for (int i = 0; i < 5; i++)
+      {
+        StateCopy(workingstate, prevstate);
+        prevvalid = valid[i].value();
+        StateCopy(workingstate, &temp);
+        if (prevvalid && !valid[i].value())
+          array[i].print();
+        if (!prevvalid && valid[i].value())
+          array[i].print();
+        if (prevvalid && valid[i].value())
+          array[i].print_diff(prevstate);
+      }
+  };
+  int multisetadd(const mu_1_Message &element)
+  {
+    update_size();
+    if (current_size >= 5) Error.Error("Maximum size of MultiSet (%s) exceeded.",name);
+    int i;
+    for (i = 0; i < 5; i++)
+      if (!valid[i].value())
+        {
+          array[i] = element;
+          valid[i].value(TRUE);
+          break;
+        }
+    current_size++;
+    return i;
+  };
+  void multisetremove(const mu_1__type_4_id &id)
+  {
+    update_size();
+    if (!valid[(int)id].value()) Error.Error("Internal Error: Illegal Multiset element selected.");
+    valid[(int)id].value(FALSE);
+    array[(int)id].undefine();
+    current_size--;
+  };
+  void MultisetSort()
+  {
+    static mu_1_Message temp;
+
+    // compact
+    int i,j;
+    for (i = 0, j = 0; i < 5; i++)
+      if (valid[i].value())
+        {
+          if (j!=i)
+            array[j++] = array[i];
+          else
+            j++;
+        }
+    if (j != current_size) current_size = j;
+    for (i = j; i < 5; i++)
+      array[i].undefine();
+    for (i = 0; i < j; i++)
+      valid[i].value(TRUE);
+    for (i = j; i < 5; i++)
+      valid[i].value(FALSE);
+
+    // bubble sort
+    for (i = 0; i < current_size; i++)
+      for (j = i+1; j < current_size; j++)
+        if (Compare(array[i],array[j])>0)
+          {
+            temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+          }
+  }
+};
+
+  void mu_1__type_4::set_self_ar( char *n1, char *n2, int os ) {
+    int l1 = strlen(n1), l2 = strlen(n2);
+    strcpy( longname, n1 );
+    longname[l1] = '[';
+    strcpy( longname+l1+1, n2 );
+    longname[l1+l2+1] = ']';
+    longname[l1+l2+2] = 0;
+    set_self( longname, os );
+  };
+  void mu_1__type_4::set_self_2( char *n1, char *n2, int os ) {
+    strcpy( longname, n1 );
+    strcat( longname, n2 );
+    set_self( longname, os );
+  };
+void mu_1__type_4::set_self( char *n, int os)
+{
+  int i,k;
+  name = n;
+  for(i = 0; i < 5; i++)
+    array[i].set_self(tsprintf("%s{%d}", n,i), i * 72 + os);
+  k = os + i * 72;
+  for(i = 0; i < 5; i++)
+    valid[i].set_self("", i * 8 + k);
+};
+mu_1__type_4::~mu_1__type_4()
+{
+}
+/*** end multiset declaration ***/
+mu_1__type_4 mu_1__type_4_undefined_var;
+
+class mu_1__type_5
+{
+ public:
+  mu_1__type_4 array[ 5 ];
+ public:
+  char *name;
+  char longname[BUFFER_SIZE/4];
+  void set_self( char *n, int os);
+  void set_self_2( char *n, char *n2, int os);
+  void set_self_ar( char *n, char *n2, int os);
+  mu_1__type_5 (char *n, int os) { set_self(n, os); };
+  mu_1__type_5 ( void ) {};
+  virtual ~mu_1__type_5 ();
+  mu_1__type_4& operator[] (int index) /* const */
+  {
+    if ( ( index >= 8 ) && ( index <= 8 ) )
+      return array[ index - (8) ];
+    if ( ( index >= 1 ) && ( index <= 4 ) )
+      return array[ index - (0) ];
+    if (index==UNDEFVAL) 
+      Error.Error("Indexing to %s using an undefined value.", name);
+    else
+      Error.Error("Funny index value %d for %s. (Internal Error in Type Checking.",index, name);
+    return array[0];
+  }
+  mu_1__type_5& operator= (const mu_1__type_5& from)
+  {
+    for (int i = 0; i < 5; i++)
+      array[i] = from.array[i];
+    return *this;
+  }
+
+friend int CompareWeight(mu_1__type_5& a, mu_1__type_5& b)
+  {
+    return 0;
+  }
+friend int Compare(mu_1__type_5& a, mu_1__type_5& b)
+  {
+    int w;
+    for (int i=0; i<5; i++) {
+      w = Compare(a.array[i], b.array[i]);
+      if (w!=0) return w;
+    }
+    return 0;
+  }
+  virtual void Permute(PermSet& Perm, int i);
+  virtual void SimpleCanonicalize(PermSet& Perm);
+  virtual void Canonicalize(PermSet& Perm);
+  virtual void SimpleLimit(PermSet& Perm);
+  virtual void ArrayLimit(PermSet& Perm);
+  virtual void Limit(PermSet& Perm);
+  virtual void MultisetLimit(PermSet& Perm);
+  virtual void MultisetSort()
+  {
+    for (int i=0; i<5; i++)
+      array[i].MultisetSort();
+  }
+  void print_statistic()
+  {
+    for (int i=0; i<5; i++)
+      array[i].print_statistic();
+  }
+  void clear() { for (int i = 0; i < 5; i++) array[i].clear(); };
+
+  void undefine() { for (int i = 0; i < 5; i++) array[i].undefine(); };
+
+  void reset() { for (int i = 0; i < 5; i++) array[i].reset(); };
+
+  void to_state(state *thestate)
+  {
+    for (int i = 0; i < 5; i++)
+      array[i].to_state(thestate);
+  };
+
+  void print()
+  {
+    for (int i = 0; i < 5; i++)
+      array[i].print(); };
+
+  void print_diff(state *prevstate)
+  {
+    for (int i = 0; i < 5; i++)
+      array[i].print_diff(prevstate);
+  };
+};
+
   void mu_1__type_5::set_self_ar( char *n1, char *n2, int os ) {
     int l1 = strlen(n1), l2 = strlen(n2);
     strcpy( longname, n1 );
@@ -1494,10 +1495,11 @@ void mu_1__type_5::set_self( char *n, int os)
   {
     int i=0;
     name = n;
-array[i].set_self_ar(n,"Directory", i * 320 + os);i++;
-array[i].set_self_ar(n,"Proc_1", i * 320 + os);i++;
-array[i].set_self_ar(n,"Proc_2", i * 320 + os);i++;
-array[i].set_self_ar(n,"Proc_3", i * 320 + os);i++;
+array[i].set_self_ar(n,"Directory", i * 400 + os);i++;
+array[i].set_self_ar(n,"Proc_1", i * 400 + os);i++;
+array[i].set_self_ar(n,"Proc_2", i * 400 + os);i++;
+array[i].set_self_ar(n,"Proc_3", i * 400 + os);i++;
+array[i].set_self_ar(n,"Proc_4", i * 400 + os);i++;
 }
 mu_1__type_5::~mu_1__type_5()
 {
@@ -1632,7 +1634,7 @@ mu_1__type_6 mu_1__type_6_undefined_var;
 class mu_1__type_7
 {
  public:
-  mu_1__type_6 array[ 4 ];
+  mu_1__type_6 array[ 5 ];
  public:
   char *name;
   char longname[BUFFER_SIZE/4];
@@ -1644,9 +1646,9 @@ class mu_1__type_7
   virtual ~mu_1__type_7 ();
   mu_1__type_6& operator[] (int index) /* const */
   {
-    if ( ( index >= 6 ) && ( index <= 6 ) )
-      return array[ index - (6) ];
-    if ( ( index >= 1 ) && ( index <= 3 ) )
+    if ( ( index >= 8 ) && ( index <= 8 ) )
+      return array[ index - (8) ];
+    if ( ( index >= 1 ) && ( index <= 4 ) )
       return array[ index - (0) ];
     if (index==UNDEFVAL) 
       Error.Error("Indexing to %s using an undefined value.", name);
@@ -1656,7 +1658,7 @@ class mu_1__type_7
   }
   mu_1__type_7& operator= (const mu_1__type_7& from)
   {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
       array[i] = from.array[i];
     return *this;
   }
@@ -1668,7 +1670,7 @@ friend int CompareWeight(mu_1__type_7& a, mu_1__type_7& b)
 friend int Compare(mu_1__type_7& a, mu_1__type_7& b)
   {
     int w;
-    for (int i=0; i<4; i++) {
+    for (int i=0; i<5; i++) {
       w = Compare(a.array[i], b.array[i]);
       if (w!=0) return w;
     }
@@ -1683,34 +1685,34 @@ friend int Compare(mu_1__type_7& a, mu_1__type_7& b)
   virtual void MultisetLimit(PermSet& Perm);
   virtual void MultisetSort()
   {
-    for (int i=0; i<4; i++)
+    for (int i=0; i<5; i++)
       array[i].MultisetSort();
   }
   void print_statistic()
   {
-    for (int i=0; i<4; i++)
+    for (int i=0; i<5; i++)
       array[i].print_statistic();
   }
-  void clear() { for (int i = 0; i < 4; i++) array[i].clear(); };
+  void clear() { for (int i = 0; i < 5; i++) array[i].clear(); };
 
-  void undefine() { for (int i = 0; i < 4; i++) array[i].undefine(); };
+  void undefine() { for (int i = 0; i < 5; i++) array[i].undefine(); };
 
-  void reset() { for (int i = 0; i < 4; i++) array[i].reset(); };
+  void reset() { for (int i = 0; i < 5; i++) array[i].reset(); };
 
   void to_state(state *thestate)
   {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
       array[i].to_state(thestate);
   };
 
   void print()
   {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
       array[i].print(); };
 
   void print_diff(state *prevstate)
   {
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
       array[i].print_diff(prevstate);
   };
 };
@@ -1737,6 +1739,7 @@ array[i].set_self_ar(n,"Directory", i * 216 + os);i++;
 array[i].set_self_ar(n,"Proc_1", i * 216 + os);i++;
 array[i].set_self_ar(n,"Proc_2", i * 216 + os);i++;
 array[i].set_self_ar(n,"Proc_3", i * 216 + os);i++;
+array[i].set_self_ar(n,"Proc_4", i * 216 + os);i++;
 }
 mu_1__type_7::~mu_1__type_7()
 {
@@ -1749,9 +1752,9 @@ class mu_1__type_8: public mu__byte
  public:
   inline int operator=(int val) { return mu__byte::operator=(val); };
   inline int operator=(const mu_1__type_8& val) { return mu__byte::operator=((int) val); };
-  mu_1__type_8 (char *name, int os): mu__byte(0, 3, 3, name, os) {};
-  mu_1__type_8 (void): mu__byte(0, 3, 3) {};
-  mu_1__type_8 (int val): mu__byte(0, 3, 3, "Parameter or function result.", 0)
+  mu_1__type_8 (char *name, int os): mu__byte(0, 4, 3, name, os) {};
+  mu_1__type_8 (void): mu__byte(0, 4, 3) {};
+  mu_1__type_8 (int val): mu__byte(0, 4, 3, "Parameter or function result.", 0)
   {
     operator=(val);
   };
@@ -1770,67 +1773,69 @@ class mu_1__type_8: public mu__byte
 /*** end of subrange decl ***/
 mu_1__type_8 mu_1__type_8_undefined_var;
 
-const int mu_ProcCount = 3;
-const int mu_ValueCount = 2;
+const int mu_ProcCount = 4;
+const int mu_ValueCount = 3;
 const int mu_NumVCs = 3;
 const int mu_RequestChannel = 0;
 const int mu_ForwardChannel = 1;
 const int mu_ResponseChannel = 2;
-const int mu_NetMax = 4;
+const int mu_NetMax = 5;
 const int mu_Proc_1 = 1;
 const int mu_Proc_2 = 2;
 const int mu_Proc_3 = 3;
-const int mu_Value_1 = 4;
-const int mu_Value_2 = 5;
-const int mu_Directory = 6;
-const int mu_GetS = 7;
-const int mu_GetM = 8;
-const int mu_PutS = 9;
-const int mu_PutM = 10;
-const int mu_Data = 11;
-const int mu_InvAck = 12;
-const int mu_InvAllAck = 13;
-const int mu_Inv = 14;
-const int mu_PutAck = 15;
-const int mu_FwdGetS = 16;
-const int mu_FwdGetM = 17;
-const int mu_FwdGetSAck = 18;
-const int mu_FwdGetMAck = 19;
-const int mu_Dir_M = 20;
-const int mu_Dir_S = 21;
-const int mu_Dir_I = 22;
-const int mu_Dir_MS_D = 23;
-const int mu_Dir_SM_A = 24;
-const int mu_Dir_MX_A = 25;
-const int mu_Proc_M = 26;
-const int mu_Proc_S = 27;
-const int mu_Proc_I = 28;
-const int mu_Proc_IS_D = 29;
-const int mu_Proc_IM_A = 30;
-const int mu_Proc_IM_AD = 31;
-const int mu_Proc_II_A = 32;
-const int mu_Proc_SM_A = 33;
-const int mu_Proc_SM_AD = 34;
-const int mu_Proc_SI_A = 35;
-const int mu_Proc_MI_A = 36;
-const int mu_Proc_IS_DP = 37;
+const int mu_Proc_4 = 4;
+const int mu_Value_1 = 5;
+const int mu_Value_2 = 6;
+const int mu_Value_3 = 7;
+const int mu_Directory = 8;
+const int mu_GetS = 9;
+const int mu_GetM = 10;
+const int mu_PutS = 11;
+const int mu_PutM = 12;
+const int mu_Data = 13;
+const int mu_InvAck = 14;
+const int mu_InvAllAck = 15;
+const int mu_Inv = 16;
+const int mu_PutAck = 17;
+const int mu_FwdGetS = 18;
+const int mu_FwdGetM = 19;
+const int mu_FwdGetSAck = 20;
+const int mu_FwdGetMAck = 21;
+const int mu_Dir_M = 22;
+const int mu_Dir_S = 23;
+const int mu_Dir_I = 24;
+const int mu_Dir_MS_D = 25;
+const int mu_Dir_SM_A = 26;
+const int mu_Dir_MX_A = 27;
+const int mu_Proc_M = 28;
+const int mu_Proc_S = 29;
+const int mu_Proc_I = 30;
+const int mu_Proc_IS_D = 31;
+const int mu_Proc_IM_A = 32;
+const int mu_Proc_IM_AD = 33;
+const int mu_Proc_II_A = 34;
+const int mu_Proc_SM_A = 35;
+const int mu_Proc_SM_AD = 36;
+const int mu_Proc_SI_A = 37;
+const int mu_Proc_MI_A = 38;
+const int mu_Proc_IS_DP = 39;
 /*** Variable declaration ***/
 mu_1_DirState mu_DirNode("DirNode",0);
 
 /*** Variable declaration ***/
-mu_1__type_3 mu_Procs("Procs",72);
+mu_1__type_3 mu_Procs("Procs",88);
 
 /*** Variable declaration ***/
-mu_1__type_5 mu_Net("Net",216);
+mu_1__type_5 mu_Net("Net",280);
 
 /*** Variable declaration ***/
-mu_1__type_7 mu_InBox("InBox",1496);
+mu_1__type_7 mu_InBox("InBox",2280);
 
 /*** Variable declaration ***/
-mu_0_boolean mu_msg_processed("msg_processed",2360);
+mu_0_boolean mu_msg_processed("msg_processed",3360);
 
 /*** Variable declaration ***/
-mu_1_Value mu_LastWrite("LastWrite",2368);
+mu_1_Value mu_LastWrite("LastWrite",3368);
 
 void mu_Send(const mu_1_MessageType& mu_mtype, const mu_1_Node& mu_dst, const mu_1_Node& mu_src, const mu_1_VCType& mu_vc, const mu_1_Value& mu_value, const mu_1_Node& mu_fwd_to, const mu_1_AckCount& mu_ack_cnt)
 {
@@ -1847,7 +1852,7 @@ mu_1_Message mu_msg("msg",0);
         {
           if ( mu_true ) mu__intexpr9++;
         }
-      if (mu_i == 4-1) break;
+      if (mu_i == 5-1) break;
     }
   }
 /*** end multisetcount 0 declaration ***/
@@ -1890,7 +1895,7 @@ cout << "src: ";
 cout << ( mu_msg.mu_src );
 cout << "\n";
 cout << "src_state: ";
-if ( (mu_msg.mu_src>=1 && mu_msg.mu_src<=3) )
+if ( (mu_msg.mu_src>=1 && mu_msg.mu_src<=4) )
 {
 mu_Procs[mu_msg.mu_src].mu_state.print();
 }
@@ -1899,7 +1904,7 @@ else
 mu_DirNode.mu_state.print();
 }
 cout << "dst_state: ";
-if ( (mu_n>=1 && mu_n<=3) )
+if ( (mu_n>=1 && mu_n<=4) )
 {
 mu_Procs[mu_n].mu_state.print();
 }
@@ -1930,7 +1935,7 @@ void mu_AddToSharersList(const mu_1_Node& mu_n)
         {
           if ( (mu_DirNode.mu_sharers[mu_i]) == (mu_n) ) mu__intexpr10++;
         }
-      if (mu_i == 3-1) break;
+      if (mu_i == 4-1) break;
     }
   }
 /*** end multisetcount 1 declaration ***/
@@ -1953,7 +1958,7 @@ mu_0_boolean mu_IsSharer(const mu_1_Node& mu_n)
         {
           if ( (mu_DirNode.mu_sharers[mu_i]) == (mu_n) ) mu__intexpr11++;
         }
-      if (mu_i == 3-1) break;
+      if (mu_i == 4-1) break;
     }
   }
 /*** end multisetcount 2 declaration ***/
@@ -1974,7 +1979,7 @@ mu_0_boolean mu_IsSharerListEmpty()
         {
           if ( mu_true ) mu__intexpr12++;
         }
-      if (mu_i == 3-1) break;
+      if (mu_i == 4-1) break;
     }
   }
 /*** end multisetcount 3 declaration ***/
@@ -1994,7 +1999,7 @@ void mu_RemoveFromSharersList(const mu_1_Node& mu_n)
         {
           if ( (mu_DirNode.mu_sharers[mu_i]) == (mu_n) ) { mu__idexpr13 = mu_i; mu_DirNode.mu_sharers.multisetremove(mu__idexpr13); };
         }
-      if (mu_i == 3-1) break;
+      if (mu_i == 4-1) break;
     }
 /*** end multisetremove 0 declaration ***/
 };
@@ -2003,7 +2008,7 @@ void mu_RemoveFromSharersList(const mu_1_Node& mu_n)
 void mu_SendInvReqToSharers(const mu_1_Node& mu_rqst)
 {
 {
-for(int mu_p = 1; mu_p <= 3; mu_p++) {
+for(int mu_p = 1; mu_p <= 4; mu_p++) {
 bool mu__boolexpr14;
   if (!(mu_IsSharer( (int)mu_p ))) mu__boolexpr14 = FALSE ;
   else {
@@ -2033,7 +2038,7 @@ mu_1__type_8 mu_cnt("cnt",0);
         {
           if ( mu_true ) mu__intexpr15++;
         }
-      if (mu_i == 3-1) break;
+      if (mu_i == 4-1) break;
     }
   }
 /*** end multisetcount 4 declaration ***/
@@ -2623,8 +2628,8 @@ public:
     mu_vc.value((r % 3) + 0);
     r = r / 3;
     static mu_1_Node mu_n;
-    mu_n.unionassign(r % 4);
-    r = r / 4;
+    mu_n.unionassign(r % 5);
+    r = r / 5;
     return tsprintf("receive-blocked-vc, vc:%s, n:%s", mu_vc.Name(), mu_n.Name());
   }
   bool Condition(unsigned r)
@@ -2633,8 +2638,8 @@ public:
     mu_vc.value((r % 3) + 0);
     r = r / 3;
     static mu_1_Node mu_n;
-    mu_n.unionassign(r % 4);
-    r = r / 4;
+    mu_n.unionassign(r % 5);
+    r = r / 5;
   return !(mu_InBox[mu_n][mu_vc].mu_mtype.isundefined());
   }
 
@@ -2645,9 +2650,9 @@ public:
     mu_vc.value((r % 3) + 0);
     r = r / 3;
     static mu_1_Node mu_n;
-    mu_n.unionassign(r % 4);
-    r = r / 4;
-    while (what_rule < 12 )
+    mu_n.unionassign(r % 5);
+    r = r / 5;
+    while (what_rule < 15 )
       {
         if ( ( TRUE  ) ) {
               if (!(mu_InBox[mu_n][mu_vc].mu_mtype.isundefined())) {
@@ -2664,8 +2669,8 @@ public:
     r = what_rule - 0;
     mu_vc.value((r % 3) + 0);
     r = r / 3;
-    mu_n.unionassign(r % 4);
-    r = r / 4;
+    mu_n.unionassign(r % 5);
+    r = r / 5;
     }
   }
 
@@ -2675,9 +2680,9 @@ public:
     mu_vc.value((r % 3) + 0);
     r = r / 3;
     static mu_1_Node mu_n;
-    mu_n.unionassign(r % 4);
-    r = r / 4;
-if ( (mu_n>=6 && mu_n<=6) )
+    mu_n.unionassign(r % 5);
+    r = r / 5;
+if ( (mu_n>=8 && mu_n<=8) )
 {
 mu_DirReceive ( mu_InBox[mu_n][mu_vc] );
 }
@@ -2705,21 +2710,21 @@ public:
   char * Name(unsigned r)
   {
     static mu_1__type_4_id mu_msg_idx;
-    mu_msg_idx.value((r % 4) + 0);
-    r = r / 4;
+    mu_msg_idx.value((r % 5) + 0);
+    r = r / 5;
     static mu_1_Node mu_n;
-    mu_n.unionassign(r % 4);
-    r = r / 4;
+    mu_n.unionassign(r % 5);
+    r = r / 5;
     return tsprintf("receive-net, msg_idx:%s, n:%s", mu_msg_idx.Name(), mu_n.Name());
   }
   bool Condition(unsigned r)
   {
     static mu_1__type_4_id mu_msg_idx;
-    mu_msg_idx.value((r % 4) + 0);
-    r = r / 4;
+    mu_msg_idx.value((r % 5) + 0);
+    r = r / 5;
     static mu_1_Node mu_n;
-    mu_n.unionassign(r % 4);
-    r = r / 4;
+    mu_n.unionassign(r % 5);
+    r = r / 5;
   if (!mu_Net[mu_n].in(mu_msg_idx)) { return FALSE; }
   mu_1__type_4& mu_chan = mu_Net[mu_n];
   mu_1_Message& mu_msg = mu_chan[mu_msg_idx];
@@ -2729,14 +2734,14 @@ public:
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 12;
+    unsigned r = what_rule - 15;
     static mu_1__type_4_id mu_msg_idx;
-    mu_msg_idx.value((r % 4) + 0);
-    r = r / 4;
+    mu_msg_idx.value((r % 5) + 0);
+    r = r / 5;
     static mu_1_Node mu_n;
-    mu_n.unionassign(r % 4);
-    r = r / 4;
-    while (what_rule < 28 && mu_msg_idx.value()<4 )
+    mu_n.unionassign(r % 5);
+    r = r / 5;
+    while (what_rule < 40 && mu_msg_idx.value()<5 )
       {
         if ( ( TRUE && mu_Net[mu_n].in(mu_msg_idx) ) ) {
   mu_1__type_4& mu_chan = mu_Net[mu_n];
@@ -2753,26 +2758,26 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 12;
-    mu_msg_idx.value((r % 4) + 0);
-    r = r / 4;
-    mu_n.unionassign(r % 4);
-    r = r / 4;
+    r = what_rule - 15;
+    mu_msg_idx.value((r % 5) + 0);
+    r = r / 5;
+    mu_n.unionassign(r % 5);
+    r = r / 5;
     }
   }
 
   void Code(unsigned r)
   {
     static mu_1__type_4_id mu_msg_idx;
-    mu_msg_idx.value((r % 4) + 0);
-    r = r / 4;
+    mu_msg_idx.value((r % 5) + 0);
+    r = r / 5;
     static mu_1_Node mu_n;
-    mu_n.unionassign(r % 4);
-    r = r / 4;
+    mu_n.unionassign(r % 5);
+    r = r / 5;
   mu_1__type_4& mu_chan = mu_Net[mu_n];
   mu_1_Message& mu_msg = mu_chan[mu_msg_idx];
   mu_1__type_6& mu_box = mu_InBox[mu_n];
-if ( (mu_n>=6 && mu_n<=6) )
+if ( (mu_n>=8 && mu_n<=8) )
 {
 mu_DirReceive ( mu_msg );
 }
@@ -2801,26 +2806,26 @@ public:
   char * Name(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
     return tsprintf("I ==(load)==> S, n:%s", mu_n.Name());
   }
   bool Condition(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
   return (mu_p.mu_state) == (mu_Proc_I);
   }
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 28;
+    unsigned r = what_rule - 40;
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
-    while (what_rule < 31 )
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
+    while (what_rule < 44 )
       {
         if ( ( TRUE  ) ) {
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
@@ -2835,17 +2840,17 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 28;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    r = what_rule - 40;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
     }
   }
 
   void Code(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
 mu_Send ( mu_GetS, (int)mu_Directory, (int)mu_n, mu_RequestChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_p.mu_state = mu_Proc_IS_D;
@@ -2865,26 +2870,26 @@ public:
   char * Name(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
     return tsprintf("I ==(store)==> M, n:%s", mu_n.Name());
   }
   bool Condition(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
   return (mu_p.mu_state) == (mu_Proc_I);
   }
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 31;
+    unsigned r = what_rule - 44;
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
-    while (what_rule < 34 )
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
+    while (what_rule < 48 )
       {
         if ( ( TRUE  ) ) {
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
@@ -2899,17 +2904,17 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 31;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    r = what_rule - 44;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
     }
   }
 
   void Code(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
 mu_Send ( mu_GetM, (int)mu_Directory, (int)mu_n, mu_RequestChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_p.mu_state = mu_Proc_IM_AD;
@@ -2929,26 +2934,26 @@ public:
   char * Name(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
     return tsprintf("S ==(store)==> M, n:%s", mu_n.Name());
   }
   bool Condition(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
   return (mu_p.mu_state) == (mu_Proc_S);
   }
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 34;
+    unsigned r = what_rule - 48;
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
-    while (what_rule < 37 )
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
+    while (what_rule < 52 )
       {
         if ( ( TRUE  ) ) {
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
@@ -2963,17 +2968,17 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 34;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    r = what_rule - 48;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
     }
   }
 
   void Code(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
 mu_Send ( mu_GetM, (int)mu_Directory, (int)mu_n, mu_RequestChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_p.mu_state = mu_Proc_SM_AD;
@@ -2993,26 +2998,26 @@ public:
   char * Name(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
     return tsprintf("S ==(evict)==> I, n:%s", mu_n.Name());
   }
   bool Condition(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
   return (mu_p.mu_state) == (mu_Proc_S);
   }
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 37;
+    unsigned r = what_rule - 52;
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
-    while (what_rule < 40 )
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
+    while (what_rule < 56 )
       {
         if ( ( TRUE  ) ) {
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
@@ -3027,17 +3032,17 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 37;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    r = what_rule - 52;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
     }
   }
 
   void Code(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
 mu_Send ( mu_PutS, (int)mu_Directory, (int)mu_n, mu_RequestChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_p.mu_state = mu_Proc_SI_A;
@@ -3057,26 +3062,26 @@ public:
   char * Name(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
     return tsprintf("M ==(evict)==> I, n:%s", mu_n.Name());
   }
   bool Condition(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
   return (mu_p.mu_state) == (mu_Proc_M);
   }
 
   void NextRule(unsigned & what_rule)
   {
-    unsigned r = what_rule - 40;
+    unsigned r = what_rule - 56;
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
-    while (what_rule < 43 )
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
+    while (what_rule < 60 )
       {
         if ( ( TRUE  ) ) {
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
@@ -3091,17 +3096,17 @@ public:
         }
         else
           what_rule += 1;
-    r = what_rule - 40;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    r = what_rule - 56;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
     }
   }
 
   void Code(unsigned r)
   {
     static mu_1_Proc mu_n;
-    mu_n.value((r % 3) + 1);
-    r = r / 3;
+    mu_n.value((r % 4) + 1);
+    r = r / 4;
   mu_1_ProcState& mu_p = mu_Procs[mu_n];
 mu_Send ( mu_PutM, (int)mu_Directory, (int)mu_n, mu_RequestChannel, mu_p.mu_value, mu_1_Node_undefined_var, 0 );
 mu_p.mu_state = mu_Proc_MI_A;
@@ -3123,78 +3128,78 @@ public:
 void SetNextEnabledRule(unsigned & what_rule)
 {
   category = CONDITION;
-  if (what_rule<12)
+  if (what_rule<15)
     { R0.NextRule(what_rule);
-      if (what_rule<12) return; }
-  if (what_rule>=12 && what_rule<28)
+      if (what_rule<15) return; }
+  if (what_rule>=15 && what_rule<40)
     { R1.NextRule(what_rule);
-      if (what_rule<28) return; }
-  if (what_rule>=28 && what_rule<31)
-    { R2.NextRule(what_rule);
-      if (what_rule<31) return; }
-  if (what_rule>=31 && what_rule<34)
-    { R3.NextRule(what_rule);
-      if (what_rule<34) return; }
-  if (what_rule>=34 && what_rule<37)
-    { R4.NextRule(what_rule);
-      if (what_rule<37) return; }
-  if (what_rule>=37 && what_rule<40)
-    { R5.NextRule(what_rule);
       if (what_rule<40) return; }
-  if (what_rule>=40 && what_rule<43)
+  if (what_rule>=40 && what_rule<44)
+    { R2.NextRule(what_rule);
+      if (what_rule<44) return; }
+  if (what_rule>=44 && what_rule<48)
+    { R3.NextRule(what_rule);
+      if (what_rule<48) return; }
+  if (what_rule>=48 && what_rule<52)
+    { R4.NextRule(what_rule);
+      if (what_rule<52) return; }
+  if (what_rule>=52 && what_rule<56)
+    { R5.NextRule(what_rule);
+      if (what_rule<56) return; }
+  if (what_rule>=56 && what_rule<60)
     { R6.NextRule(what_rule);
-      if (what_rule<43) return; }
+      if (what_rule<60) return; }
 }
 bool Condition(unsigned r)
 {
   category = CONDITION;
-  if (r<=11) return R0.Condition(r-0);
-  if (r>=12 && r<=27) return R1.Condition(r-12);
-  if (r>=28 && r<=30) return R2.Condition(r-28);
-  if (r>=31 && r<=33) return R3.Condition(r-31);
-  if (r>=34 && r<=36) return R4.Condition(r-34);
-  if (r>=37 && r<=39) return R5.Condition(r-37);
-  if (r>=40 && r<=42) return R6.Condition(r-40);
+  if (r<=14) return R0.Condition(r-0);
+  if (r>=15 && r<=39) return R1.Condition(r-15);
+  if (r>=40 && r<=43) return R2.Condition(r-40);
+  if (r>=44 && r<=47) return R3.Condition(r-44);
+  if (r>=48 && r<=51) return R4.Condition(r-48);
+  if (r>=52 && r<=55) return R5.Condition(r-52);
+  if (r>=56 && r<=59) return R6.Condition(r-56);
 Error.Notrace("Internal: NextStateGenerator -- checking condition for nonexisting rule.");
 }
 void Code(unsigned r)
 {
-  if (r<=11) { R0.Code(r-0); return; } 
-  if (r>=12 && r<=27) { R1.Code(r-12); return; } 
-  if (r>=28 && r<=30) { R2.Code(r-28); return; } 
-  if (r>=31 && r<=33) { R3.Code(r-31); return; } 
-  if (r>=34 && r<=36) { R4.Code(r-34); return; } 
-  if (r>=37 && r<=39) { R5.Code(r-37); return; } 
-  if (r>=40 && r<=42) { R6.Code(r-40); return; } 
+  if (r<=14) { R0.Code(r-0); return; } 
+  if (r>=15 && r<=39) { R1.Code(r-15); return; } 
+  if (r>=40 && r<=43) { R2.Code(r-40); return; } 
+  if (r>=44 && r<=47) { R3.Code(r-44); return; } 
+  if (r>=48 && r<=51) { R4.Code(r-48); return; } 
+  if (r>=52 && r<=55) { R5.Code(r-52); return; } 
+  if (r>=56 && r<=59) { R6.Code(r-56); return; } 
 }
 int Priority(unsigned short r)
 {
-  if (r<=11) { return R0.Priority(); } 
-  if (r>=12 && r<=27) { return R1.Priority(); } 
-  if (r>=28 && r<=30) { return R2.Priority(); } 
-  if (r>=31 && r<=33) { return R3.Priority(); } 
-  if (r>=34 && r<=36) { return R4.Priority(); } 
-  if (r>=37 && r<=39) { return R5.Priority(); } 
-  if (r>=40 && r<=42) { return R6.Priority(); } 
+  if (r<=14) { return R0.Priority(); } 
+  if (r>=15 && r<=39) { return R1.Priority(); } 
+  if (r>=40 && r<=43) { return R2.Priority(); } 
+  if (r>=44 && r<=47) { return R3.Priority(); } 
+  if (r>=48 && r<=51) { return R4.Priority(); } 
+  if (r>=52 && r<=55) { return R5.Priority(); } 
+  if (r>=56 && r<=59) { return R6.Priority(); } 
 }
 char * Name(unsigned r)
 {
-  if (r<=11) return R0.Name(r-0);
-  if (r>=12 && r<=27) return R1.Name(r-12);
-  if (r>=28 && r<=30) return R2.Name(r-28);
-  if (r>=31 && r<=33) return R3.Name(r-31);
-  if (r>=34 && r<=36) return R4.Name(r-34);
-  if (r>=37 && r<=39) return R5.Name(r-37);
-  if (r>=40 && r<=42) return R6.Name(r-40);
+  if (r<=14) return R0.Name(r-0);
+  if (r>=15 && r<=39) return R1.Name(r-15);
+  if (r>=40 && r<=43) return R2.Name(r-40);
+  if (r>=44 && r<=47) return R3.Name(r-44);
+  if (r>=48 && r<=51) return R4.Name(r-48);
+  if (r>=52 && r<=55) return R5.Name(r-52);
+  if (r>=56 && r<=59) return R6.Name(r-56);
   return NULL;
 }
 };
-const unsigned numrules = 43;
+const unsigned numrules = 60;
 
 /********************
   parameter
  ********************/
-#define RULES_IN_WORLD 43
+#define RULES_IN_WORLD 60
 
 
 /********************
@@ -3214,13 +3219,13 @@ mu_DirNode.mu_state = mu_Dir_I;
 mu_DirNode.mu_owner = mu_Directory;
 mu_DirNode.mu_sharers.undefine();
 {
-for(int mu_v = 4; mu_v <= 5; mu_v++) {
+for(int mu_v = 5; mu_v <= 7; mu_v++) {
 mu_DirNode.mu_value = mu_v;
 };
 };
 mu_LastWrite = mu_DirNode.mu_value;
 {
-for(int mu_i = 1; mu_i <= 3; mu_i++) {
+for(int mu_i = 1; mu_i <= 4; mu_i++) {
 mu_Procs[mu_i].mu_state = mu_Proc_I;
 mu_Procs[mu_i].mu_ack_cnt = 0;
 mu_Procs[mu_i].mu_value.undefine();
@@ -3256,7 +3261,7 @@ int mu__invariant_18() // Invariant "Invalid Processors are not present on Share
 bool mu__quant19; 
 mu__quant19 = TRUE;
 {
-for(int mu_n = 1; mu_n <= 3; mu_n++) {
+for(int mu_n = 1; mu_n <= 4; mu_n++) {
 bool mu__boolexpr20;
   if (!((mu_Procs[mu_n].mu_state) == (mu_Proc_I))) mu__boolexpr20 = TRUE ;
   else {
@@ -3270,7 +3275,7 @@ bool mu__boolexpr20;
         {
           if ( (mu_DirNode.mu_sharers[mu_i]) == (mu_n) ) mu__intexpr21++;
         }
-      if (mu_i == 3-1) break;
+      if (mu_i == 4-1) break;
     }
   }
 /*** end multisetcount 7 declaration ***/
@@ -3295,11 +3300,11 @@ int mu__invariant_23() // Invariant "If processor is in Modified state, there ar
 bool mu__quant24; 
 mu__quant24 = TRUE;
 {
-for(int mu_n = 1; mu_n <= 3; mu_n++) {
+for(int mu_n = 1; mu_n <= 4; mu_n++) {
 bool mu__quant25; 
 mu__quant25 = TRUE;
 {
-for(int mu_m = 1; mu_m <= 3; mu_m++) {
+for(int mu_m = 1; mu_m <= 4; mu_m++) {
 bool mu__boolexpr26;
 bool mu__boolexpr27;
   if (!((mu_Procs[mu_n].mu_state) == (mu_Proc_M))) mu__boolexpr27 = FALSE ;
@@ -3338,7 +3343,7 @@ int mu__invariant_30() // Invariant "Processors in a valid state (S or M) match 
 bool mu__quant31; 
 mu__quant31 = TRUE;
 {
-for(int mu_n = 1; mu_n <= 3; mu_n++) {
+for(int mu_n = 1; mu_n <= 4; mu_n++) {
 bool mu__boolexpr32;
 bool mu__boolexpr33;
   if ((mu_Procs[mu_n].mu_state) == (mu_Proc_S)) mu__boolexpr33 = TRUE ;
@@ -3368,7 +3373,7 @@ int mu__invariant_35() // Invariant "Values in memory matches value of last writ
 bool mu__quant36; 
 mu__quant36 = TRUE;
 {
-for(int mu_n = 1; mu_n <= 3; mu_n++) {
+for(int mu_n = 1; mu_n <= 4; mu_n++) {
 bool mu__boolexpr37;
 bool mu__boolexpr38;
   if ((mu_DirNode.mu_state) == (mu_Dir_S)) mu__boolexpr38 = TRUE ;
@@ -3398,7 +3403,7 @@ int mu__invariant_40() // Invariant "Processor in I state implies the value is u
 bool mu__quant41; 
 mu__quant41 = TRUE;
 {
-for(int mu_n = 1; mu_n <= 3; mu_n++) {
+for(int mu_n = 1; mu_n <= 4; mu_n++) {
 bool mu__boolexpr42;
   if (!((mu_Procs[mu_n].mu_state) == (mu_Proc_I))) mu__boolexpr42 = TRUE ;
   else {
@@ -3423,7 +3428,7 @@ int mu__invariant_44() // Invariant "Processor in S state implies the value matc
 bool mu__quant45; 
 mu__quant45 = TRUE;
 {
-for(int mu_n = 1; mu_n <= 3; mu_n++) {
+for(int mu_n = 1; mu_n <= 4; mu_n++) {
 bool mu__boolexpr46;
 bool mu__boolexpr47;
   if (!((mu_DirNode.mu_state) == (mu_Dir_S))) mu__boolexpr47 = FALSE ;
@@ -3463,7 +3468,7 @@ bool mu__boolexpr50;
         {
           if ( mu_true ) mu__intexpr51++;
         }
-      if (mu_i == 3-1) break;
+      if (mu_i == 4-1) break;
     }
   }
 /*** end multisetcount 6 declaration ***/
@@ -3499,7 +3504,7 @@ bool mu__boolexpr55;
         {
           if ( mu_true ) mu__intexpr56++;
         }
-      if (mu_i == 3-1) break;
+      if (mu_i == 4-1) break;
     }
   }
 /*** end multisetcount 5 declaration ***/
@@ -3625,7 +3630,7 @@ public:
   /********************
    Simple and efficient representation
    ********************/
-  int class_mu_1_Value[2];
+  int class_mu_1_Value[3];
   int undefined_class_mu_1_Value;// has the highest class number
 
   void Print_class_mu_1_Value();
@@ -3635,14 +3640,14 @@ public:
     int i,j;
     if (OnlyOneRemain_mu_1_Value)
       return FALSE;
-    for (i=0; i<2; i++)
-      for (j=0; j<2; j++)
+    for (i=0; i<3; i++)
+      for (j=0; j<3; j++)
         if (i!=j && class_mu_1_Value[i]== class_mu_1_Value[j])
 	    return TRUE;
     OnlyOneRemain_mu_1_Value = TRUE;
     return FALSE;
   }
-  int class_mu_1_Proc[3];
+  int class_mu_1_Proc[4];
   int undefined_class_mu_1_Proc;// has the highest class number
 
   void Print_class_mu_1_Proc();
@@ -3652,8 +3657,8 @@ public:
     int i,j;
     if (OnlyOneRemain_mu_1_Proc)
       return FALSE;
-    for (i=0; i<3; i++)
-      for (j=0; j<3; j++)
+    for (i=0; i<4; i++)
+      for (j=0; j<4; j++)
         if (i!=j && class_mu_1_Proc[i]== class_mu_1_Proc[j])
 	    return TRUE;
     OnlyOneRemain_mu_1_Proc = TRUE;
@@ -3678,20 +3683,20 @@ public:
   // they will be of size 1 for reduced local memory canonicalize
   // second range will be size of the scalarset
   int * in_mu_1_Value;
-  typedef int arr_mu_1_Value[2];
+  typedef int arr_mu_1_Value[3];
   arr_mu_1_Value * perm_mu_1_Value;
   arr_mu_1_Value * revperm_mu_1_Value;
 
-  int size_mu_1_Value[2];
+  int size_mu_1_Value[3];
   bool reversed_sorted_mu_1_Value(int start, int end);
   void reverse_reversed_mu_1_Value(int start, int end);
 
   int * in_mu_1_Proc;
-  typedef int arr_mu_1_Proc[3];
+  typedef int arr_mu_1_Proc[4];
   arr_mu_1_Proc * perm_mu_1_Proc;
   arr_mu_1_Proc * revperm_mu_1_Proc;
 
-  int size_mu_1_Proc[3];
+  int size_mu_1_Proc[4];
   bool reversed_sorted_mu_1_Proc(int start, int end);
   void reverse_reversed_mu_1_Proc(int start, int end);
 
@@ -3711,14 +3716,14 @@ public:
 void PermSet::Print_class_mu_1_Value()
 {
   cout << "class_mu_1_Value:\t";
-  for (int i=0; i<2; i++)
+  for (int i=0; i<3; i++)
     cout << class_mu_1_Value[i];
   cout << " " << undefined_class_mu_1_Value << "\n";
 }
 void PermSet::Print_class_mu_1_Proc()
 {
   cout << "class_mu_1_Proc:\t";
-  for (int i=0; i<3; i++)
+  for (int i=0; i<4; i++)
     cout << class_mu_1_Proc[i];
   cout << " " << undefined_class_mu_1_Proc << "\n";
 }
@@ -3728,12 +3733,12 @@ bool PermSet::MoreThanOneRemain()
   if (AlreadyOnlyOneRemain)
     return FALSE;
   else {
-    for (i=0; i<2; i++)
-      for (j=0; j<2; j++)
-        if (i!=j && class_mu_1_Value[i]== class_mu_1_Value[j])
-	    return TRUE;
     for (i=0; i<3; i++)
       for (j=0; j<3; j++)
+        if (i!=j && class_mu_1_Value[i]== class_mu_1_Value[j])
+	    return TRUE;
+    for (i=0; i<4; i++)
+      for (j=0; j<4; j++)
         if (i!=j && class_mu_1_Proc[i]== class_mu_1_Proc[j])
 	    return TRUE;
   }
@@ -3746,45 +3751,45 @@ PermSet::PermSet()
   int i,j,k;
   if (  args->sym_alg.mode == argsym_alg::Exhaustive_Fast_Canonicalize
      || args->sym_alg.mode == argsym_alg::Heuristic_Fast_Canonicalize) {
-    mu_1_Value Perm0[2];
-    mu_1_Proc Perm1[3];
+    mu_1_Value Perm0[3];
+    mu_1_Proc Perm1[4];
 
   /********************
    declaration of class variables
   ********************/
-  in = new bool[12];
- in_mu_1_Value = new int[12];
- perm_mu_1_Value = new arr_mu_1_Value[2];
- revperm_mu_1_Value = new arr_mu_1_Value[2];
- in_mu_1_Proc = new int[12];
- perm_mu_1_Proc = new arr_mu_1_Proc[6];
- revperm_mu_1_Proc = new arr_mu_1_Proc[6];
+  in = new bool[144];
+ in_mu_1_Value = new int[144];
+ perm_mu_1_Value = new arr_mu_1_Value[6];
+ revperm_mu_1_Value = new arr_mu_1_Value[6];
+ in_mu_1_Proc = new int[144];
+ perm_mu_1_Proc = new arr_mu_1_Proc[24];
+ revperm_mu_1_Proc = new arr_mu_1_Proc[24];
 
     // Set perm and revperm
     count = 0;
-    for (i=4; i<=5; i++)
+    for (i=5; i<=7; i++)
       {
         Perm0[0].value(i);
         GenPerm0(Perm0, 1, count);
       }
-    if (count!=2)
+    if (count!=6)
       Error.Error( "unable to initialize PermSet");
-    for (i=0; i<2; i++)
-      for (j=4; j<=5; j++)
-        for (k=4; k<=5; k++)
-          if (revperm_mu_1_Value[i][k-4]==j)   // k - base 
-            perm_mu_1_Value[i][j-4]=k; // j - base 
+    for (i=0; i<6; i++)
+      for (j=5; j<=7; j++)
+        for (k=5; k<=7; k++)
+          if (revperm_mu_1_Value[i][k-5]==j)   // k - base 
+            perm_mu_1_Value[i][j-5]=k; // j - base 
     count = 0;
-    for (i=1; i<=3; i++)
+    for (i=1; i<=4; i++)
       {
         Perm1[0].value(i);
         GenPerm1(Perm1, 1, count);
       }
-    if (count!=6)
+    if (count!=24)
       Error.Error( "unable to initialize PermSet");
-    for (i=0; i<6; i++)
-      for (j=1; j<=3; j++)
-        for (k=1; k<=3; k++)
+    for (i=0; i<24; i++)
+      for (j=1; j<=4; j++)
+        for (k=1; k<=4; k++)
           if (revperm_mu_1_Proc[i][k-1]==j)   // k - base 
             perm_mu_1_Proc[i][j-1]=k; // j - base 
 
@@ -3793,19 +3798,19 @@ PermSet::PermSet()
     int carry;
     int i_mu_1_Value = 0;
     int i_mu_1_Proc = 0;
-    size = 12;
-    count = 12;
-    for (i=0; i<12; i++)
+    size = 144;
+    count = 144;
+    for (i=0; i<144; i++)
       {
         carry = 1;
         in[i]= TRUE;
       in_mu_1_Value[i] = i_mu_1_Value;
       i_mu_1_Value += carry;
-      if (i_mu_1_Value >= 2) { i_mu_1_Value = 0; carry = 1; } 
+      if (i_mu_1_Value >= 6) { i_mu_1_Value = 0; carry = 1; } 
       else { carry = 0; } 
       in_mu_1_Proc[i] = i_mu_1_Proc;
       i_mu_1_Proc += carry;
-      if (i_mu_1_Proc >= 6) { i_mu_1_Proc = 0; carry = 1; } 
+      if (i_mu_1_Proc >= 24) { i_mu_1_Proc = 0; carry = 1; } 
       else { carry = 0; } 
     }
   }
@@ -3830,11 +3835,11 @@ PermSet::PermSet()
 void PermSet::ResetToSimple()
 {
   int i;
-  for (i=0; i<2; i++)
+  for (i=0; i<3; i++)
     class_mu_1_Value[i]=0;
   undefined_class_mu_1_Value=0;
   OnlyOneRemain_mu_1_Value = FALSE;
-  for (i=0; i<3; i++)
+  for (i=0; i<4; i++)
     class_mu_1_Proc[i]=0;
   undefined_class_mu_1_Proc=0;
   OnlyOneRemain_mu_1_Proc = FALSE;
@@ -3844,29 +3849,29 @@ void PermSet::ResetToSimple()
 }
 void PermSet::ResetToExplicit()
 {
-  for (int i=0; i<12; i++) in[i] = TRUE;
+  for (int i=0; i<144; i++) in[i] = TRUE;
   Presentation = Explicit;
 }
 void PermSet::SimpleToExplicit()
 {
   int i,j,k;
   int start, class_size;
-  int start_mu_1_Value[2];
-  int size_mu_1_Value[2];
-  bool should_be_in_mu_1_Value[2];
-  int start_mu_1_Proc[3];
-  int size_mu_1_Proc[3];
-  bool should_be_in_mu_1_Proc[6];
+  int start_mu_1_Value[3];
+  int size_mu_1_Value[3];
+  bool should_be_in_mu_1_Value[6];
+  int start_mu_1_Proc[4];
+  int size_mu_1_Proc[4];
+  bool should_be_in_mu_1_Proc[24];
 
   // Setup range for mapping
   start = 0;
   for (j=0; j<=undefined_class_mu_1_Value; j++) // class number
     {
       class_size = 0;
-      for (k=0; k<2; k++) // step through class_mu_1_pid[k]
+      for (k=0; k<3; k++) // step through class_mu_1_pid[k]
 	if (class_mu_1_Value[k]==j)
 	  class_size++;
-      for (k=0; k<2; k++) // step through class_mu_1_pid[k]
+      for (k=0; k<3; k++) // step through class_mu_1_pid[k]
 	if (class_mu_1_Value[k]==j)
 	  {
 	    size_mu_1_Value[k] = class_size;
@@ -3878,10 +3883,10 @@ void PermSet::SimpleToExplicit()
   for (j=0; j<=undefined_class_mu_1_Proc; j++) // class number
     {
       class_size = 0;
-      for (k=0; k<3; k++) // step through class_mu_1_pid[k]
+      for (k=0; k<4; k++) // step through class_mu_1_pid[k]
 	if (class_mu_1_Proc[k]==j)
 	  class_size++;
-      for (k=0; k<3; k++) // step through class_mu_1_pid[k]
+      for (k=0; k<4; k++) // step through class_mu_1_pid[k]
 	if (class_mu_1_Proc[k]==j)
 	  {
 	    size_mu_1_Proc[k] = class_size;
@@ -3891,20 +3896,20 @@ void PermSet::SimpleToExplicit()
     }
 
   // To be In or not to be
-  for (i=0; i<2; i++) // set up
+  for (i=0; i<6; i++) // set up
     should_be_in_mu_1_Value[i] = TRUE;
-  for (i=0; i<2; i++) // to be in or not to be
-    for (k=0; k<2; k++) // step through class_mu_1_pid[k]
-      if (! (perm_mu_1_Value[i][k]-4 >=start_mu_1_Value[k] 
-	     && perm_mu_1_Value[i][k]-4 < start_mu_1_Value[k] + size_mu_1_Value[k]) )
+  for (i=0; i<6; i++) // to be in or not to be
+    for (k=0; k<3; k++) // step through class_mu_1_pid[k]
+      if (! (perm_mu_1_Value[i][k]-5 >=start_mu_1_Value[k] 
+	     && perm_mu_1_Value[i][k]-5 < start_mu_1_Value[k] + size_mu_1_Value[k]) )
   	    {
 	      should_be_in_mu_1_Value[i] = FALSE;
 	      break;
 	    }
-  for (i=0; i<6; i++) // set up
+  for (i=0; i<24; i++) // set up
     should_be_in_mu_1_Proc[i] = TRUE;
-  for (i=0; i<6; i++) // to be in or not to be
-    for (k=0; k<3; k++) // step through class_mu_1_pid[k]
+  for (i=0; i<24; i++) // to be in or not to be
+    for (k=0; k<4; k++) // step through class_mu_1_pid[k]
       if (! (perm_mu_1_Proc[i][k]-1 >=start_mu_1_Proc[k] 
 	     && perm_mu_1_Proc[i][k]-1 < start_mu_1_Proc[k] + size_mu_1_Proc[k]) )
   	    {
@@ -3914,7 +3919,7 @@ void PermSet::SimpleToExplicit()
 
   // setup explicit representation 
   // Set perm and revperm
-  for (i=0; i<12; i++)
+  for (i=0; i<144; i++)
     {
       in[i] = TRUE;
       if (in[i] && !should_be_in_mu_1_Value[in_mu_1_Value[i]]) in[i] = FALSE;
@@ -3935,10 +3940,10 @@ void PermSet::SimpleToOne()
   for (j=0; j<=undefined_class_mu_1_Value; j++) // class number
     {
       class_size = 0;
-      for (k=0; k<2; k++) // step through class_mu_1_pid[k]
+      for (k=0; k<3; k++) // step through class_mu_1_pid[k]
 	if (class_mu_1_Value[k]==j)
 	  class_size++;
-      for (k=0; k<2; k++) // step through class_mu_1_pid[k]
+      for (k=0; k<3; k++) // step through class_mu_1_pid[k]
 	if (class_mu_1_Value[k]==j)
 	  {
 	    size_mu_1_Value[k] = class_size;
@@ -3949,10 +3954,10 @@ void PermSet::SimpleToOne()
   for (j=0; j<=undefined_class_mu_1_Proc; j++) // class number
     {
       class_size = 0;
-      for (k=0; k<3; k++) // step through class_mu_1_pid[k]
+      for (k=0; k<4; k++) // step through class_mu_1_pid[k]
 	if (class_mu_1_Proc[k]==j)
 	  class_size++;
-      for (k=0; k<3; k++) // step through class_mu_1_pid[k]
+      for (k=0; k<4; k++) // step through class_mu_1_pid[k]
 	if (class_mu_1_Proc[k]==j)
 	  {
 	    size_mu_1_Proc[k] = class_size;
@@ -3962,23 +3967,23 @@ void PermSet::SimpleToOne()
   start = 0;
   for (j=0; j<=undefined_class_mu_1_Value; j++) // class number
     {
-      for (k=0; k<2; k++) // step through class_mu_1_pid[k]
-	    if (class_mu_1_Value[k]==j)
-	      revperm_mu_1_Value[0][start++] = k+4;
-    }
-  for (j=0; j<2; j++)
-    for (k=0; k<2; k++)
-      if (revperm_mu_1_Value[0][k]==j+4)
-        perm_mu_1_Value[0][j]=k+4;
-  start = 0;
-  for (j=0; j<=undefined_class_mu_1_Proc; j++) // class number
-    {
       for (k=0; k<3; k++) // step through class_mu_1_pid[k]
-	    if (class_mu_1_Proc[k]==j)
-	      revperm_mu_1_Proc[0][start++] = k+1;
+	    if (class_mu_1_Value[k]==j)
+	      revperm_mu_1_Value[0][start++] = k+5;
     }
   for (j=0; j<3; j++)
     for (k=0; k<3; k++)
+      if (revperm_mu_1_Value[0][k]==j+5)
+        perm_mu_1_Value[0][j]=k+5;
+  start = 0;
+  for (j=0; j<=undefined_class_mu_1_Proc; j++) // class number
+    {
+      for (k=0; k<4; k++) // step through class_mu_1_pid[k]
+	    if (class_mu_1_Proc[k]==j)
+	      revperm_mu_1_Proc[0][start++] = k+1;
+    }
+  for (j=0; j<4; j++)
+    for (k=0; k<4; k++)
       if (revperm_mu_1_Proc[0][k]==j+1)
         perm_mu_1_Proc[0][j]=k+1;
   Presentation = Explicit;
@@ -3993,9 +3998,9 @@ bool PermSet::ok0(mu_1_Value* Perm, int size, mu_1_Value k)
 void PermSet::GenPerm0(mu_1_Value* Perm,int size, unsigned long& count)
 {
   int i;
-  if (size!=2)
+  if (size!=3)
     {
-      for (i=4; i<=5; i++)
+      for (i=5; i<=7; i++)
         if(ok0(Perm,size,i))
           {
             Perm[size].value(i);
@@ -4004,8 +4009,8 @@ void PermSet::GenPerm0(mu_1_Value* Perm,int size, unsigned long& count)
     }
   else
     {
-      for (i=4; i<=5; i++)
-        revperm_mu_1_Value[count][i-4]=Perm[i-4].value();// i - base
+      for (i=5; i<=7; i++)
+        revperm_mu_1_Value[count][i-5]=Perm[i-5].value();// i - base
       count++;
     }
 }
@@ -4019,9 +4024,9 @@ bool PermSet::ok1(mu_1_Proc* Perm, int size, mu_1_Proc k)
 void PermSet::GenPerm1(mu_1_Proc* Perm,int size, unsigned long& count)
 {
   int i;
-  if (size!=3)
+  if (size!=4)
     {
-      for (i=1; i<=3; i++)
+      for (i=1; i<=4; i++)
         if(ok1(Perm,size,i))
           {
             Perm[size].value(i);
@@ -4030,7 +4035,7 @@ void PermSet::GenPerm1(mu_1_Proc* Perm,int size, unsigned long& count)
     }
   else
     {
-      for (i=1; i<=3; i++)
+      for (i=1; i<=4; i++)
         revperm_mu_1_Proc[count][i-1]=Perm[i-1].value();// i - base
       count++;
     }
@@ -4100,9 +4105,9 @@ bool PermSet::NextPermutation()
   // 	           break;
   // 	         }
   //     }
-  for (start = 0; start < 2; )
+  for (start = 0; start < 3; )
     {
-      end = start-1+size_mu_1_Value[revperm_mu_1_Value[0][start]-4];
+      end = start-1+size_mu_1_Value[revperm_mu_1_Value[0][start]-5];
       if (reversed_sorted_mu_1_Value(start,end))
 	       {
 	  reverse_reversed_mu_1_Value(start,end);
@@ -4134,7 +4139,7 @@ bool PermSet::NextPermutation()
 	}
     }
 if (!nexted) {
-  for (start = 0; start < 3; )
+  for (start = 0; start < 4; )
     {
       end = start-1+size_mu_1_Proc[revperm_mu_1_Proc[0][start]-1];
       if (reversed_sorted_mu_1_Proc(start,end))
@@ -4169,12 +4174,12 @@ if (!nexted) {
     }
 }
 if (!nexted) return FALSE;
-  for (j=0; j<2; j++)
-    for (k=0; k<2; k++)
-      if (revperm_mu_1_Value[0][k]==j+4)   // k - base 
-	perm_mu_1_Value[0][j]=k+4; // j - base 
   for (j=0; j<3; j++)
     for (k=0; k<3; k++)
+      if (revperm_mu_1_Value[0][k]==j+5)   // k - base 
+	perm_mu_1_Value[0][j]=k+5; // j - base 
+  for (j=0; j<4; j++)
+    for (k=0; k<4; k++)
       if (revperm_mu_1_Proc[0][k]==j+1)   // k - base 
 	perm_mu_1_Proc[0][j]=k+1; // j - base 
   return TRUE;
@@ -4261,7 +4266,7 @@ void mu_1_Proc::SimpleCanonicalize(PermSet& Perm)
     if (Perm.class_mu_1_Proc[value()-1]==Perm.undefined_class_mu_1_Proc) // value - base
       {
         // it has not been mapped to any particular value
-        for (i=0; i<3; i++)
+        for (i=0; i<4; i++)
           if (Perm.class_mu_1_Proc[i] == Perm.undefined_class_mu_1_Proc && i!=value()-1)
             Perm.class_mu_1_Proc[i]++;
         value(1 + Perm.undefined_class_mu_1_Proc++);
@@ -4285,7 +4290,7 @@ void mu_1_Proc::SimpleLimit(PermSet& Perm)
     if (Perm.class_mu_1_Proc[value()-1]==Perm.undefined_class_mu_1_Proc) // value - base
       {
         // it has not been mapped to any particular value
-        for (i=0; i<3; i++)
+        for (i=0; i<4; i++)
           if (Perm.class_mu_1_Proc[i] == Perm.undefined_class_mu_1_Proc && i!=value()-1)
             Perm.class_mu_1_Proc[i]++;
         Perm.undefined_class_mu_1_Proc++;
@@ -4300,7 +4305,7 @@ void mu_1_Value::Permute(PermSet& Perm, int i)
   if (Perm.Presentation != PermSet::Explicit)
     Error.Error("Internal Error: Wrong Sequence of Normalization");
   if (defined())
-    value(Perm.perm_mu_1_Value[Perm.in_mu_1_Value[i]][value()-4]); // value - base
+    value(Perm.perm_mu_1_Value[Perm.in_mu_1_Value[i]][value()-5]); // value - base
 };
 void mu_1_Value::SimpleCanonicalize(PermSet& Perm)
 {
@@ -4309,17 +4314,17 @@ void mu_1_Value::SimpleCanonicalize(PermSet& Perm)
     Error.Error("Internal Error: Wrong Sequence of Normalization");
 
   if (defined())
-    if (Perm.class_mu_1_Value[value()-4]==Perm.undefined_class_mu_1_Value) // value - base
+    if (Perm.class_mu_1_Value[value()-5]==Perm.undefined_class_mu_1_Value) // value - base
       {
         // it has not been mapped to any particular value
-        for (i=0; i<2; i++)
-          if (Perm.class_mu_1_Value[i] == Perm.undefined_class_mu_1_Value && i!=value()-4)
+        for (i=0; i<3; i++)
+          if (Perm.class_mu_1_Value[i] == Perm.undefined_class_mu_1_Value && i!=value()-5)
             Perm.class_mu_1_Value[i]++;
-        value(4 + Perm.undefined_class_mu_1_Value++);
+        value(5 + Perm.undefined_class_mu_1_Value++);
       }
     else 
       {
-        value(Perm.class_mu_1_Value[value()-4]+4);
+        value(Perm.class_mu_1_Value[value()-5]+5);
       }
 }
 void mu_1_Value::Canonicalize(PermSet& Perm)
@@ -4333,11 +4338,11 @@ void mu_1_Value::SimpleLimit(PermSet& Perm)
     Error.Error("Internal Error: Wrong Sequence of Normalization");
 
   if (defined())
-    if (Perm.class_mu_1_Value[value()-4]==Perm.undefined_class_mu_1_Value) // value - base
+    if (Perm.class_mu_1_Value[value()-5]==Perm.undefined_class_mu_1_Value) // value - base
       {
         // it has not been mapped to any particular value
-        for (i=0; i<2; i++)
-          if (Perm.class_mu_1_Value[i] == Perm.undefined_class_mu_1_Value && i!=value()-4)
+        for (i=0; i<3; i++)
+          if (Perm.class_mu_1_Value[i] == Perm.undefined_class_mu_1_Value && i!=value()-5)
             Perm.class_mu_1_Value[i]++;
         Perm.undefined_class_mu_1_Value++;
       }
@@ -4359,7 +4364,7 @@ void mu_1_Node::Permute(PermSet& Perm, int i)
   if (Perm.Presentation != PermSet::Explicit)
     Error.Error("Internal Error: Wrong Sequence of Normalization");
   if (defined()) {
-    if ( ( value() >= 1 ) && ( value() <= 3 ) )
+    if ( ( value() >= 1 ) && ( value() <= 4 ) )
       value(Perm.perm_mu_1_Proc[Perm.in_mu_1_Proc[i]][value()-1]+(0)); // value - base
   }
 }
@@ -4369,12 +4374,12 @@ void mu_1_Node::SimpleCanonicalize(PermSet& Perm)
   if (Perm.Presentation != PermSet::Simple)
     Error.Error("Internal Error: Wrong Sequence of Normalization");
   if (defined()) {
-    if ( ( value() >= 1 ) && ( value() <= 3 ) )
+    if ( ( value() >= 1 ) && ( value() <= 4 ) )
       {
         if (Perm.class_mu_1_Proc[value()-1]==Perm.undefined_class_mu_1_Proc) // value - base
           {
             // it has not been mapped to any particular value
-            for (i=0; i<3; i++)
+            for (i=0; i<4; i++)
               if (Perm.class_mu_1_Proc[i] == Perm.undefined_class_mu_1_Proc && i!=value()-1)
                 Perm.class_mu_1_Proc[i]++;
             value(1 + Perm.undefined_class_mu_1_Proc++);
@@ -4396,11 +4401,11 @@ void mu_1_Node::SimpleLimit(PermSet& Perm)
   if (Perm.Presentation != PermSet::Simple)
     Error.Error("Internal Error: Wrong Sequence of Normalization");
   if (defined()) {
-    if ( ( value() >= 1 ) && ( value() <= 3 ) )
+    if ( ( value() >= 1 ) && ( value() <= 4 ) )
       if (Perm.class_mu_1_Proc[value()-1]==Perm.undefined_class_mu_1_Proc) // value - base
         {
           // it has not been mapped to any particular value
-          for (i=0; i<3; i++)
+          for (i=0; i<4; i++)
             if (Perm.class_mu_1_Proc[i] == Perm.undefined_class_mu_1_Proc && i!=value()-1)
               Perm.class_mu_1_Proc[i]++;
           Perm.undefined_class_mu_1_Proc++;
@@ -4475,7 +4480,7 @@ void mu_1__type_1::Permute(PermSet& Perm, int i)
 {
   static mu_1__type_1 temp("Permute_mu_1__type_1",-1);
   int j;
-  for (j=0; j<3; j++)
+  for (j=0; j<4; j++)
     array[j].Permute(Perm, i);
 };
 void mu_1__type_1::SimpleCanonicalize(PermSet& Perm)
@@ -4495,21 +4500,21 @@ void mu_1__type_1::MultisetLimit(PermSet& Perm)
   // while guard
   bool while_guard, while_guard_temp;
   // sorting
-  static mu_1_Node value[3];
+  static mu_1_Node value[4];
   // limit
   bool exists;
   bool split;
   int i0;
   int count_mu_1_Proc, oldcount_mu_1_Proc;
-  bool pos_mu_1_Proc[3][3];
-  bool goodset_mu_1_Proc[3];
+  bool pos_mu_1_Proc[4][4];
+  bool goodset_mu_1_Proc[4];
   int count_multisetindex, oldcount_multisetindex;
-  bool pos_multisetindex[3][3];
-  bool goodset_multisetindex[3];
+  bool pos_multisetindex[4][4];
+  bool goodset_multisetindex[4];
   mu_1_Node temp;
 
   // compact
-  for (i = 0, j = 0; i < 3; i++)
+  for (i = 0, j = 0; i < 4; i++)
     if (valid[i].value())
       {
         if (j!=i)
@@ -4518,11 +4523,11 @@ void mu_1__type_1::MultisetLimit(PermSet& Perm)
           j++;
       }
   if (j != current_size) current_size = j;
-  for (i = j; i < 3; i++)
+  for (i = j; i < 4; i++)
     array[i].undefine();
   for (i = 0; i < j; i++)
     valid[i].value(TRUE);
-  for (i = j; i < 3; i++)
+  for (i = j; i < 4; i++)
     valid[i].value(FALSE);
 
   // bubble sort
@@ -4553,14 +4558,14 @@ void mu_1__type_1::MultisetLimit(PermSet& Perm)
     {
 
   // initializing pos array
-  for (i=0; i<3; i++)
-    for (j=0; j<3; j++)
+  for (i=0; i<4; i++)
+    for (j=0; j<4; j++)
       pos_mu_1_Proc[i][j]=FALSE;
   count_mu_1_Proc = 0;
   while (1)
     {
       exists = FALSE;
-      for (i=0; i<3; i++)
+      for (i=0; i<4; i++)
        if (Perm.class_mu_1_Proc[i] == count_mu_1_Proc)
          {
            pos_mu_1_Proc[count_mu_1_Proc][i]=TRUE;
@@ -4572,7 +4577,7 @@ void mu_1__type_1::MultisetLimit(PermSet& Perm)
 
   // refinement -- checking priority in general
   while_guard = (count_multisetindex < current_size);
-  while_guard = while_guard || (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3);
+  while_guard = while_guard || (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4);
   while ( while_guard )
     {
       oldcount_multisetindex = count_multisetindex;
@@ -4582,14 +4587,14 @@ void mu_1__type_1::MultisetLimit(PermSet& Perm)
       //               as in array S1 of S2
       // only if there is more than 1 permutation in class
       if ( (count_multisetindex<current_size)
-           || ( Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3) )
+           || ( Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4) )
         {
           exists = FALSE;
           split = FALSE;
           for (k=0; k<current_size; k++) // step through class
             if ((!(*this)[k].isundefined())
                 && (*this)[k]>=1
-                && (*this)[k]<=3)
+                && (*this)[k]<=4)
               split = TRUE;
           if (split)
             {
@@ -4599,14 +4604,14 @@ void mu_1__type_1::MultisetLimit(PermSet& Perm)
                     exists = FALSE;
                     for (k=0; k<current_size; k++) // initialize goodset
                       goodset_multisetindex[k] = FALSE;
-                    for (k=0; k<3; k++) // initialize goodset
+                    for (k=0; k<4; k++) // initialize goodset
                       goodset_mu_1_Proc[k] = FALSE;
                     for (k=0; k<current_size; k++) // scan array index
                       // set goodsets
                       if (pos_multisetindex[i][k] 
                           && !(*this)[k].isundefined()
                           && (*this)[k]>=1
-                          && (*this)[k]<=3
+                          && (*this)[k]<=4
                           && pos_mu_1_Proc[j][(*this)[k]-1])
                         {
                           exists = TRUE;
@@ -4638,17 +4643,17 @@ void mu_1__type_1::MultisetLimit(PermSet& Perm)
                           }
                         // set split for the element type
                         split=FALSE;
-                        for (k=0; k<3; k++)
+                        for (k=0; k<4; k++)
                           if ( pos_mu_1_Proc[j][k] && !goodset_mu_1_Proc[k] )
                             split= TRUE;
                         if (split)
                           {
                             // move following pos entries down 1 step
                             for (z=count_mu_1_Proc; z>j; z--)
-                              for (k=0; k<3; k++)
+                              for (k=0; k<4; k++)
                                 pos_mu_1_Proc[z][k] = pos_mu_1_Proc[z-1][k];
                             // split pos
-                            for (k=0; k<3; k++)
+                            for (k=0; k<4; k++)
                               {
                                 if (pos_mu_1_Proc[j][k] && !goodset_mu_1_Proc[k])
                                   pos_mu_1_Proc[j][k] = FALSE;
@@ -4665,18 +4670,18 @@ void mu_1__type_1::MultisetLimit(PermSet& Perm)
       while_guard = while_guard || (oldcount_mu_1_Proc!=count_mu_1_Proc);
       while_guard_temp = while_guard;
       while_guard = (count_multisetindex < current_size);
-      while_guard = while_guard || count_mu_1_Proc<3;
+      while_guard = while_guard || count_mu_1_Proc<4;
       while_guard = while_guard && while_guard_temp;
     } // end while
   // enter the result into class
   if (Perm.MTO_class_mu_1_Proc())
     {
-      for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
+      for (i=0; i<4; i++)
+        for (j=0; j<4; j++)
           if (pos_mu_1_Proc[i][j])
             Perm.class_mu_1_Proc[j] = i;
       Perm.undefined_class_mu_1_Proc=0;
-      for (j=0; j<3; j++)
+      for (j=0; j<4; j++)
         if (Perm.class_mu_1_Proc[j]>Perm.undefined_class_mu_1_Proc)
           Perm.undefined_class_mu_1_Proc=Perm.class_mu_1_Proc[j];
     }
@@ -4744,10 +4749,10 @@ void mu_1__type_3::Permute(PermSet& Perm, int i)
 {
   static mu_1__type_3 temp("Permute_mu_1__type_3",-1);
   int j;
-  for (j=0; j<3; j++)
+  for (j=0; j<4; j++)
     array[j].Permute(Perm, i);
   temp = *this;
-  for (j=1; j<=3; j++)
+  for (j=1; j<=4; j++)
     (*this)[j] = temp[Perm.revperm_mu_1_Proc[Perm.in_mu_1_Proc[i]][j-1]];};
 void mu_1__type_3::SimpleCanonicalize(PermSet& Perm)
 { Error.Error("Internal: Simple Canonicalization of Scalarset Array\n"); };
@@ -4760,21 +4765,21 @@ void mu_1__type_3::ArrayLimit(PermSet& Perm)
   // sorting
   int count_mu_1_Proc;
   int compare;
-  static mu_1_ProcState value[3];
+  static mu_1_ProcState value[4];
   // limit
   bool exists;
   bool split;
-  bool goodset_mu_1_Proc[3];
-  bool pos_mu_1_Proc[3][3];
+  bool goodset_mu_1_Proc[4];
+  bool pos_mu_1_Proc[4][4];
   // sorting mu_1_Proc
   // only if there is more than 1 permutation in class
   if (Perm.MTO_class_mu_1_Proc())
     {
-      for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
+      for (i=0; i<4; i++)
+        for (j=0; j<4; j++)
           pos_mu_1_Proc[i][j]=FALSE;
       count_mu_1_Proc = 0;
-      for (i=0; i<3; i++)
+      for (i=0; i<4; i++)
         {
           for (j=0; j<count_mu_1_Proc; j++)
             {
@@ -4789,11 +4794,11 @@ void mu_1__type_3::ArrayLimit(PermSet& Perm)
                   for (k=count_mu_1_Proc; k>j; k--)
                     {
                       value[k] = value[k-1];
-                      for (z=0; z<3; z++)
+                      for (z=0; z<4; z++)
                         pos_mu_1_Proc[k][z] = pos_mu_1_Proc[k-1][z];
                     }
                   value[j] = (*this)[i+1];
-                  for (z=0; z<3; z++)
+                  for (z=0; z<4; z++)
                     pos_mu_1_Proc[j][z] = FALSE;
                   pos_mu_1_Proc[j][i] = TRUE;
                   count_mu_1_Proc++;
@@ -4803,7 +4808,7 @@ void mu_1__type_3::ArrayLimit(PermSet& Perm)
           if (j==count_mu_1_Proc)
             {
               value[j] = (*this)[i+1];
-              for (z=0; z<3; z++)
+              for (z=0; z<4; z++)
                 pos_mu_1_Proc[j][z] = FALSE;
               pos_mu_1_Proc[j][i] = TRUE;
               count_mu_1_Proc++;
@@ -4814,14 +4819,14 @@ void mu_1__type_3::ArrayLimit(PermSet& Perm)
   if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc>1)
     {
       // limit
-      for (j=0; j<3; j++) // class priority
+      for (j=0; j<4; j++) // class priority
         {
           for (i=0; i<count_mu_1_Proc; i++) // for value priority
             {
               exists = FALSE;
-              for (k=0; k<3; k++) // step through class
+              for (k=0; k<4; k++) // step through class
                 goodset_mu_1_Proc[k] = FALSE;
-              for (k=0; k<3; k++) // step through class
+              for (k=0; k<4; k++) // step through class
                 if (pos_mu_1_Proc[i][k] && Perm.class_mu_1_Proc[k] == j)
                   {
                     exists = TRUE;
@@ -4831,12 +4836,12 @@ void mu_1__type_3::ArrayLimit(PermSet& Perm)
               if (exists)
                 {
                   split=FALSE;
-                  for (k=0; k<3; k++)
+                  for (k=0; k<4; k++)
                     if ( Perm.class_mu_1_Proc[k] == j && !goodset_mu_1_Proc[k] ) 
                       split= TRUE;
                   if (split)
                     {
-                      for (k=0; k<3; k++)
+                      for (k=0; k<4; k++)
                         if (Perm.class_mu_1_Proc[k]>j
                             || ( Perm.class_mu_1_Proc[k] == j && !goodset_mu_1_Proc[k] ) )
                           Perm.class_mu_1_Proc[k]++;
@@ -4854,17 +4859,17 @@ void mu_1__type_3::Limit(PermSet& Perm)
   // while guard
   bool while_guard, while_guard_temp;
   // sorting
-  static mu_1_ProcState value[3];
+  static mu_1_ProcState value[4];
   // limit
   bool exists;
   bool split;
   int i0;
   int count_mu_1_Proc, oldcount_mu_1_Proc;
-  bool pos_mu_1_Proc[3][3];
-  bool goodset_mu_1_Proc[3];
+  bool pos_mu_1_Proc[4][4];
+  bool goodset_mu_1_Proc[4];
   int count_mu_1_Value, oldcount_mu_1_Value;
-  bool pos_mu_1_Value[2][2];
-  bool goodset_mu_1_Value[2];
+  bool pos_mu_1_Value[3][3];
+  bool goodset_mu_1_Value[3];
   // count_ corresponds to the number of equivalence class within the
   // scalarset value.  If count_ == size of the scalarset, then a unique
   // permutation has been found.
@@ -4872,14 +4877,14 @@ void mu_1__type_3::Limit(PermSet& Perm)
   // pos_ is a relation on a equivalence class number and a scalarset value.
 
   // initializing pos array
-  for (i=0; i<3; i++)
-    for (j=0; j<3; j++)
+  for (i=0; i<4; i++)
+    for (j=0; j<4; j++)
       pos_mu_1_Proc[i][j]=FALSE;
   count_mu_1_Proc = 0;
   while (1)
     {
       exists = FALSE;
-      for (i=0; i<3; i++)
+      for (i=0; i<4; i++)
        if (Perm.class_mu_1_Proc[i] == count_mu_1_Proc)
          {
            pos_mu_1_Proc[count_mu_1_Proc][i]=TRUE;
@@ -4895,14 +4900,14 @@ void mu_1__type_3::Limit(PermSet& Perm)
   // pos_ is a relation on a equivalence class number and a scalarset value.
 
   // initializing pos array
-  for (i=0; i<2; i++)
-    for (j=0; j<2; j++)
+  for (i=0; i<3; i++)
+    for (j=0; j<3; j++)
       pos_mu_1_Value[i][j]=FALSE;
   count_mu_1_Value = 0;
   while (1)
     {
       exists = FALSE;
-      for (i=0; i<2; i++)
+      for (i=0; i<3; i++)
        if (Perm.class_mu_1_Value[i] == count_mu_1_Value)
          {
            pos_mu_1_Value[count_mu_1_Value][i]=TRUE;
@@ -4914,8 +4919,8 @@ void mu_1__type_3::Limit(PermSet& Perm)
 
   // refinement -- checking priority in general
   while_guard = FALSE;
-  while_guard = while_guard || (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3);
-  while_guard = while_guard || (Perm.MTO_class_mu_1_Value() && count_mu_1_Value<2);
+  while_guard = while_guard || (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4);
+  while_guard = while_guard || (Perm.MTO_class_mu_1_Value() && count_mu_1_Value<3);
   while ( while_guard )
     {
       oldcount_mu_1_Proc = count_mu_1_Proc;
@@ -4924,12 +4929,12 @@ void mu_1__type_3::Limit(PermSet& Perm)
       // refinement -- graph structure for two scalarsets
       //               as in array S1 of S2
       // only if there is more than 1 permutation in class
-      if ( (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3)
-           || ( Perm.MTO_class_mu_1_Value() && count_mu_1_Value<2) )
+      if ( (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4)
+           || ( Perm.MTO_class_mu_1_Value() && count_mu_1_Value<3) )
         {
           exists = FALSE;
           split = FALSE;
-          for (k=0; k<3; k++) // step through class
+          for (k=0; k<4; k++) // step through class
             if ((*this)[k+1].mu_value.isundefined())
               exists = TRUE;
             else
@@ -4940,35 +4945,35 @@ void mu_1__type_3::Limit(PermSet& Perm)
                 for (j=0; j<count_mu_1_Value; j++) //scan through element priority
                   {
                     exists = FALSE;
-                    for (k=0; k<3; k++) // initialize goodset
+                    for (k=0; k<4; k++) // initialize goodset
                       goodset_mu_1_Proc[k] = FALSE;
-                    for (k=0; k<2; k++) // initialize goodset
+                    for (k=0; k<3; k++) // initialize goodset
                       goodset_mu_1_Value[k] = FALSE;
-                    for (k=0; k<3; k++) // scan array index
+                    for (k=0; k<4; k++) // scan array index
                       // set goodsets
                       if (pos_mu_1_Proc[i][k] 
                           && !(*this)[k+1].mu_value.isundefined()
-                          && pos_mu_1_Value[j][(*this)[k+1].mu_value-4])
+                          && pos_mu_1_Value[j][(*this)[k+1].mu_value-5])
                         {
                           exists = TRUE;
                           goodset_mu_1_Proc[k] = TRUE;
-                          goodset_mu_1_Value[(*this)[k+1].mu_value-4] = TRUE;
+                          goodset_mu_1_Value[(*this)[k+1].mu_value-5] = TRUE;
                         }
                     if (exists)
                       {
                         // set split for the array index type
                         split=FALSE;
-                        for (k=0; k<3; k++)
+                        for (k=0; k<4; k++)
                           if ( pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k] )
                             split= TRUE;
                         if (split)
                           {
                             // move following pos entries down 1 step
                             for (z=count_mu_1_Proc; z>i; z--)
-                              for (k=0; k<3; k++)
+                              for (k=0; k<4; k++)
                                 pos_mu_1_Proc[z][k] = pos_mu_1_Proc[z-1][k];
                             // split pos
-                            for (k=0; k<3; k++)
+                            for (k=0; k<4; k++)
                               {
                                 if (pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k])
                                   pos_mu_1_Proc[i][k] = FALSE;
@@ -4979,17 +4984,17 @@ void mu_1__type_3::Limit(PermSet& Perm)
                           }
                         // set split for the element type
                         split=FALSE;
-                        for (k=0; k<2; k++)
+                        for (k=0; k<3; k++)
                           if ( pos_mu_1_Value[j][k] && !goodset_mu_1_Value[k] )
                             split= TRUE;
                         if (split)
                           {
                             // move following pos entries down 1 step
                             for (z=count_mu_1_Value; z>j; z--)
-                              for (k=0; k<2; k++)
+                              for (k=0; k<3; k++)
                                 pos_mu_1_Value[z][k] = pos_mu_1_Value[z-1][k];
                             // split pos
-                            for (k=0; k<2; k++)
+                            for (k=0; k<3; k++)
                               {
                                 if (pos_mu_1_Value[j][k] && !goodset_mu_1_Value[k])
                                   pos_mu_1_Value[j][k] = FALSE;
@@ -5007,31 +5012,31 @@ void mu_1__type_3::Limit(PermSet& Perm)
       while_guard = while_guard || (oldcount_mu_1_Value!=count_mu_1_Value);
       while_guard_temp = while_guard;
       while_guard = FALSE;
-      while_guard = while_guard || count_mu_1_Proc<3;
-      while_guard = while_guard || count_mu_1_Value<2;
+      while_guard = while_guard || count_mu_1_Proc<4;
+      while_guard = while_guard || count_mu_1_Value<3;
       while_guard = while_guard && while_guard_temp;
     } // end while
   // enter the result into class
   if (Perm.MTO_class_mu_1_Proc())
     {
-      for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
+      for (i=0; i<4; i++)
+        for (j=0; j<4; j++)
           if (pos_mu_1_Proc[i][j])
             Perm.class_mu_1_Proc[j] = i;
       Perm.undefined_class_mu_1_Proc=0;
-      for (j=0; j<3; j++)
+      for (j=0; j<4; j++)
         if (Perm.class_mu_1_Proc[j]>Perm.undefined_class_mu_1_Proc)
           Perm.undefined_class_mu_1_Proc=Perm.class_mu_1_Proc[j];
     }
   // enter the result into class
   if (Perm.MTO_class_mu_1_Value())
     {
-      for (i=0; i<2; i++)
-        for (j=0; j<2; j++)
+      for (i=0; i<3; i++)
+        for (j=0; j<3; j++)
           if (pos_mu_1_Value[i][j])
             Perm.class_mu_1_Value[j] = i;
       Perm.undefined_class_mu_1_Value=0;
-      for (j=0; j<2; j++)
+      for (j=0; j<3; j++)
         if (Perm.class_mu_1_Value[j]>Perm.undefined_class_mu_1_Value)
           Perm.undefined_class_mu_1_Value=Perm.class_mu_1_Value[j];
     }
@@ -5042,7 +5047,7 @@ void mu_1__type_4::Permute(PermSet& Perm, int i)
 {
   static mu_1__type_4 temp("Permute_mu_1__type_4",-1);
   int j;
-  for (j=0; j<4; j++)
+  for (j=0; j<5; j++)
     array[j].Permute(Perm, i);
 };
 void mu_1__type_4::SimpleCanonicalize(PermSet& Perm)
@@ -5062,24 +5067,24 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
   // while guard
   bool while_guard, while_guard_temp;
   // sorting
-  static mu_1_Message value[4];
+  static mu_1_Message value[5];
   // limit
   bool exists;
   bool split;
   int i0;
   int count_mu_1_Value, oldcount_mu_1_Value;
-  bool pos_mu_1_Value[2][2];
-  bool goodset_mu_1_Value[2];
+  bool pos_mu_1_Value[3][3];
+  bool goodset_mu_1_Value[3];
   int count_mu_1_Proc, oldcount_mu_1_Proc;
-  bool pos_mu_1_Proc[3][3];
-  bool goodset_mu_1_Proc[3];
+  bool pos_mu_1_Proc[4][4];
+  bool goodset_mu_1_Proc[4];
   int count_multisetindex, oldcount_multisetindex;
-  bool pos_multisetindex[4][4];
-  bool goodset_multisetindex[4];
+  bool pos_multisetindex[5][5];
+  bool goodset_multisetindex[5];
   mu_1_Message temp;
 
   // compact
-  for (i = 0, j = 0; i < 4; i++)
+  for (i = 0, j = 0; i < 5; i++)
     if (valid[i].value())
       {
         if (j!=i)
@@ -5088,11 +5093,11 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
           j++;
       }
   if (j != current_size) current_size = j;
-  for (i = j; i < 4; i++)
+  for (i = j; i < 5; i++)
     array[i].undefine();
   for (i = 0; i < j; i++)
     valid[i].value(TRUE);
-  for (i = j; i < 4; i++)
+  for (i = j; i < 5; i++)
     valid[i].value(FALSE);
 
   // bubble sort
@@ -5123,14 +5128,14 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
     {
 
   // initializing pos array
-  for (i=0; i<2; i++)
-    for (j=0; j<2; j++)
+  for (i=0; i<3; i++)
+    for (j=0; j<3; j++)
       pos_mu_1_Value[i][j]=FALSE;
   count_mu_1_Value = 0;
   while (1)
     {
       exists = FALSE;
-      for (i=0; i<2; i++)
+      for (i=0; i<3; i++)
        if (Perm.class_mu_1_Value[i] == count_mu_1_Value)
          {
            pos_mu_1_Value[count_mu_1_Value][i]=TRUE;
@@ -5140,14 +5145,14 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
       else break;
     }
   // initializing pos array
-  for (i=0; i<3; i++)
-    for (j=0; j<3; j++)
+  for (i=0; i<4; i++)
+    for (j=0; j<4; j++)
       pos_mu_1_Proc[i][j]=FALSE;
   count_mu_1_Proc = 0;
   while (1)
     {
       exists = FALSE;
-      for (i=0; i<3; i++)
+      for (i=0; i<4; i++)
        if (Perm.class_mu_1_Proc[i] == count_mu_1_Proc)
          {
            pos_mu_1_Proc[count_mu_1_Proc][i]=TRUE;
@@ -5159,8 +5164,8 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
 
   // refinement -- checking priority in general
   while_guard = (count_multisetindex < current_size);
-  while_guard = while_guard || (Perm.MTO_class_mu_1_Value() && count_mu_1_Value<2);
-  while_guard = while_guard || (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3);
+  while_guard = while_guard || (Perm.MTO_class_mu_1_Value() && count_mu_1_Value<3);
+  while_guard = while_guard || (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4);
   while ( while_guard )
     {
       oldcount_multisetindex = count_multisetindex;
@@ -5171,14 +5176,14 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
       //               as in array S1 of S2
       // only if there is more than 1 permutation in class
       if ( (count_multisetindex<current_size)
-           || ( Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3) )
+           || ( Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4) )
         {
           exists = FALSE;
           split = FALSE;
           for (k=0; k<current_size; k++) // step through class
             if ((!(*this)[k].mu_src.isundefined())
                 && (*this)[k].mu_src>=1
-                && (*this)[k].mu_src<=3)
+                && (*this)[k].mu_src<=4)
               split = TRUE;
           if (split)
             {
@@ -5188,14 +5193,14 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
                     exists = FALSE;
                     for (k=0; k<current_size; k++) // initialize goodset
                       goodset_multisetindex[k] = FALSE;
-                    for (k=0; k<3; k++) // initialize goodset
+                    for (k=0; k<4; k++) // initialize goodset
                       goodset_mu_1_Proc[k] = FALSE;
                     for (k=0; k<current_size; k++) // scan array index
                       // set goodsets
                       if (pos_multisetindex[i][k] 
                           && !(*this)[k].mu_src.isundefined()
                           && (*this)[k].mu_src>=1
-                          && (*this)[k].mu_src<=3
+                          && (*this)[k].mu_src<=4
                           && pos_mu_1_Proc[j][(*this)[k].mu_src-1])
                         {
                           exists = TRUE;
@@ -5227,17 +5232,17 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
                           }
                         // set split for the element type
                         split=FALSE;
-                        for (k=0; k<3; k++)
+                        for (k=0; k<4; k++)
                           if ( pos_mu_1_Proc[j][k] && !goodset_mu_1_Proc[k] )
                             split= TRUE;
                         if (split)
                           {
                             // move following pos entries down 1 step
                             for (z=count_mu_1_Proc; z>j; z--)
-                              for (k=0; k<3; k++)
+                              for (k=0; k<4; k++)
                                 pos_mu_1_Proc[z][k] = pos_mu_1_Proc[z-1][k];
                             // split pos
-                            for (k=0; k<3; k++)
+                            for (k=0; k<4; k++)
                               {
                                 if (pos_mu_1_Proc[j][k] && !goodset_mu_1_Proc[k])
                                   pos_mu_1_Proc[j][k] = FALSE;
@@ -5254,7 +5259,7 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
       // refinement -- graph structure for two scalarsets
       //               as in array S1 of S2
       if ( ( count_multisetindex<current_size)
-           || ( Perm.MTO_class_mu_1_Value() && count_mu_1_Value<2) )
+           || ( Perm.MTO_class_mu_1_Value() && count_mu_1_Value<3) )
         {
           exists = FALSE;
           split = FALSE;
@@ -5269,17 +5274,17 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
                     exists = FALSE;
                     for (k=0; k<current_size; k++) // initialize goodset
                       goodset_multisetindex[k] = FALSE;
-                    for (k=0; k<2; k++) // initialize goodset
+                    for (k=0; k<3; k++) // initialize goodset
                       goodset_mu_1_Value[k] = FALSE;
                     for (k=0; k<current_size; k++) // scan array index
                       // set goodsets
                       if (pos_multisetindex[i][k] 
                           && !(*this)[k].mu_value.isundefined()
-                          && pos_mu_1_Value[j][(*this)[k].mu_value-4])
+                          && pos_mu_1_Value[j][(*this)[k].mu_value-5])
                         {
                           exists = TRUE;
                           goodset_multisetindex[k] = TRUE;
-                          goodset_mu_1_Value[(*this)[k].mu_value-4] = TRUE;
+                          goodset_mu_1_Value[(*this)[k].mu_value-5] = TRUE;
                         }
                     if (exists)
                       {
@@ -5306,17 +5311,17 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
                           }
                         // set split for the element type
                         split=FALSE;
-                        for (k=0; k<2; k++)
+                        for (k=0; k<3; k++)
                           if ( pos_mu_1_Value[j][k] && !goodset_mu_1_Value[k] )
                             split= TRUE;
                         if (split)
                           {
                             // move following pos entries down 1 step
                             for (z=count_mu_1_Value; z>j; z--)
-                              for (k=0; k<2; k++)
+                              for (k=0; k<3; k++)
                                 pos_mu_1_Value[z][k] = pos_mu_1_Value[z-1][k];
                             // split pos
-                            for (k=0; k<2; k++)
+                            for (k=0; k<3; k++)
                               {
                                 if (pos_mu_1_Value[j][k] && !goodset_mu_1_Value[k])
                                   pos_mu_1_Value[j][k] = FALSE;
@@ -5334,14 +5339,14 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
       //               as in array S1 of S2
       // only if there is more than 1 permutation in class
       if ( (count_multisetindex<current_size)
-           || ( Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3) )
+           || ( Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4) )
         {
           exists = FALSE;
           split = FALSE;
           for (k=0; k<current_size; k++) // step through class
             if ((!(*this)[k].mu_fwd_to.isundefined())
                 && (*this)[k].mu_fwd_to>=1
-                && (*this)[k].mu_fwd_to<=3)
+                && (*this)[k].mu_fwd_to<=4)
               split = TRUE;
           if (split)
             {
@@ -5351,14 +5356,14 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
                     exists = FALSE;
                     for (k=0; k<current_size; k++) // initialize goodset
                       goodset_multisetindex[k] = FALSE;
-                    for (k=0; k<3; k++) // initialize goodset
+                    for (k=0; k<4; k++) // initialize goodset
                       goodset_mu_1_Proc[k] = FALSE;
                     for (k=0; k<current_size; k++) // scan array index
                       // set goodsets
                       if (pos_multisetindex[i][k] 
                           && !(*this)[k].mu_fwd_to.isundefined()
                           && (*this)[k].mu_fwd_to>=1
-                          && (*this)[k].mu_fwd_to<=3
+                          && (*this)[k].mu_fwd_to<=4
                           && pos_mu_1_Proc[j][(*this)[k].mu_fwd_to-1])
                         {
                           exists = TRUE;
@@ -5390,17 +5395,17 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
                           }
                         // set split for the element type
                         split=FALSE;
-                        for (k=0; k<3; k++)
+                        for (k=0; k<4; k++)
                           if ( pos_mu_1_Proc[j][k] && !goodset_mu_1_Proc[k] )
                             split= TRUE;
                         if (split)
                           {
                             // move following pos entries down 1 step
                             for (z=count_mu_1_Proc; z>j; z--)
-                              for (k=0; k<3; k++)
+                              for (k=0; k<4; k++)
                                 pos_mu_1_Proc[z][k] = pos_mu_1_Proc[z-1][k];
                             // split pos
-                            for (k=0; k<3; k++)
+                            for (k=0; k<4; k++)
                               {
                                 if (pos_mu_1_Proc[j][k] && !goodset_mu_1_Proc[k])
                                   pos_mu_1_Proc[j][k] = FALSE;
@@ -5418,31 +5423,31 @@ void mu_1__type_4::MultisetLimit(PermSet& Perm)
       while_guard = while_guard || (oldcount_mu_1_Proc!=count_mu_1_Proc);
       while_guard_temp = while_guard;
       while_guard = (count_multisetindex < current_size);
-      while_guard = while_guard || count_mu_1_Value<2;
-      while_guard = while_guard || count_mu_1_Proc<3;
+      while_guard = while_guard || count_mu_1_Value<3;
+      while_guard = while_guard || count_mu_1_Proc<4;
       while_guard = while_guard && while_guard_temp;
     } // end while
   // enter the result into class
   if (Perm.MTO_class_mu_1_Value())
     {
-      for (i=0; i<2; i++)
-        for (j=0; j<2; j++)
+      for (i=0; i<3; i++)
+        for (j=0; j<3; j++)
           if (pos_mu_1_Value[i][j])
             Perm.class_mu_1_Value[j] = i;
       Perm.undefined_class_mu_1_Value=0;
-      for (j=0; j<2; j++)
+      for (j=0; j<3; j++)
         if (Perm.class_mu_1_Value[j]>Perm.undefined_class_mu_1_Value)
           Perm.undefined_class_mu_1_Value=Perm.class_mu_1_Value[j];
     }
   // enter the result into class
   if (Perm.MTO_class_mu_1_Proc())
     {
-      for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
+      for (i=0; i<4; i++)
+        for (j=0; j<4; j++)
           if (pos_mu_1_Proc[i][j])
             Perm.class_mu_1_Proc[j] = i;
       Perm.undefined_class_mu_1_Proc=0;
-      for (j=0; j<3; j++)
+      for (j=0; j<4; j++)
         if (Perm.class_mu_1_Proc[j]>Perm.undefined_class_mu_1_Proc)
           Perm.undefined_class_mu_1_Proc=Perm.class_mu_1_Proc[j];
     }
@@ -5452,10 +5457,10 @@ void mu_1__type_5::Permute(PermSet& Perm, int i)
 {
   static mu_1__type_5 temp("Permute_mu_1__type_5",-1);
   int j;
-  for (j=0; j<4; j++)
+  for (j=0; j<5; j++)
     array[j].Permute(Perm, i);
   temp = *this;
-  for (j=1; j<=3; j++)
+  for (j=1; j<=4; j++)
     (*this)[j] = temp[Perm.revperm_mu_1_Proc[Perm.in_mu_1_Proc[i]][j-1]];
 };
 void mu_1__type_5::SimpleCanonicalize(PermSet& Perm)
@@ -5468,22 +5473,22 @@ void mu_1__type_5::ArrayLimit(PermSet& Perm)
   int i,j,k,z;
   // sorting
   int compare;
-  static mu_1__type_4 value[4];
+  static mu_1__type_4 value[5];
   // limit
   bool exists;
   bool split;
   int count_mu_1_Proc;
-  bool pos_mu_1_Proc[3][3];
-  bool goodset_mu_1_Proc[3];
+  bool pos_mu_1_Proc[4][4];
+  bool goodset_mu_1_Proc[4];
   // sorting mu_1_Proc
   // only if there is more than 1 permutation in class
   if (Perm.MTO_class_mu_1_Proc())
     {
-      for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
+      for (i=0; i<4; i++)
+        for (j=0; j<4; j++)
           pos_mu_1_Proc[i][j]=FALSE;
       count_mu_1_Proc = 0;
-      for (i=0; i<3; i++)
+      for (i=0; i<4; i++)
         {
           for (j=0; j<count_mu_1_Proc; j++)
             {
@@ -5498,11 +5503,11 @@ void mu_1__type_5::ArrayLimit(PermSet& Perm)
                   for (k=count_mu_1_Proc; k>j; k--)
                     {
                       value[k] = value[k-1];
-                      for (z=0; z<3; z++)
+                      for (z=0; z<4; z++)
                         pos_mu_1_Proc[k][z] = pos_mu_1_Proc[k-1][z];
                     }
                   value[j] = (*this)[i+1];
-                  for (z=0; z<3; z++)
+                  for (z=0; z<4; z++)
                     pos_mu_1_Proc[j][z] = FALSE;
                   pos_mu_1_Proc[j][i] = TRUE;
                   count_mu_1_Proc++;
@@ -5512,7 +5517,7 @@ void mu_1__type_5::ArrayLimit(PermSet& Perm)
           if (j==count_mu_1_Proc)
             {
               value[j] = (*this)[i+1];
-              for (z=0; z<3; z++)
+              for (z=0; z<4; z++)
                 pos_mu_1_Proc[j][z] = FALSE;
               pos_mu_1_Proc[j][i] = TRUE;
               count_mu_1_Proc++;
@@ -5523,14 +5528,14 @@ void mu_1__type_5::ArrayLimit(PermSet& Perm)
   if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc>1)
     {
       // limit
-      for (j=0; j<3; j++) // class priority
+      for (j=0; j<4; j++) // class priority
         {
           for (i=0; i<count_mu_1_Proc; i++) // for value priority
             {
               exists = FALSE;
-              for (k=0; k<3; k++) // step through class
+              for (k=0; k<4; k++) // step through class
                 goodset_mu_1_Proc[k] = FALSE;
-              for (k=0; k<3; k++) // step through class
+              for (k=0; k<4; k++) // step through class
                 if (pos_mu_1_Proc[i][k] && Perm.class_mu_1_Proc[k] == j)
                   {
                     exists = TRUE;
@@ -5540,12 +5545,12 @@ void mu_1__type_5::ArrayLimit(PermSet& Perm)
               if (exists)
                 {
                   split=FALSE;
-                  for (k=0; k<3; k++)
+                  for (k=0; k<4; k++)
                     if ( Perm.class_mu_1_Proc[k] == j && !goodset_mu_1_Proc[k] ) 
                       split= TRUE;
                   if (split)
                     {
-                      for (k=0; k<3; k++)
+                      for (k=0; k<4; k++)
                         if (Perm.class_mu_1_Proc[k]>j
                             || ( Perm.class_mu_1_Proc[k] == j && !goodset_mu_1_Proc[k] ) )
                           Perm.class_mu_1_Proc[k]++;
@@ -5586,10 +5591,10 @@ void mu_1__type_7::Permute(PermSet& Perm, int i)
 {
   static mu_1__type_7 temp("Permute_mu_1__type_7",-1);
   int j;
-  for (j=0; j<4; j++)
+  for (j=0; j<5; j++)
     array[j].Permute(Perm, i);
   temp = *this;
-  for (j=1; j<=3; j++)
+  for (j=1; j<=4; j++)
     (*this)[j] = temp[Perm.revperm_mu_1_Proc[Perm.in_mu_1_Proc[i]][j-1]];
 };
 void mu_1__type_7::SimpleCanonicalize(PermSet& Perm)
@@ -5602,22 +5607,22 @@ void mu_1__type_7::ArrayLimit(PermSet& Perm)
   int i,j,k,z;
   // sorting
   int compare;
-  static mu_1__type_6 value[4];
+  static mu_1__type_6 value[5];
   // limit
   bool exists;
   bool split;
   int count_mu_1_Proc;
-  bool pos_mu_1_Proc[3][3];
-  bool goodset_mu_1_Proc[3];
+  bool pos_mu_1_Proc[4][4];
+  bool goodset_mu_1_Proc[4];
   // sorting mu_1_Proc
   // only if there is more than 1 permutation in class
   if (Perm.MTO_class_mu_1_Proc())
     {
-      for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
+      for (i=0; i<4; i++)
+        for (j=0; j<4; j++)
           pos_mu_1_Proc[i][j]=FALSE;
       count_mu_1_Proc = 0;
-      for (i=0; i<3; i++)
+      for (i=0; i<4; i++)
         {
           for (j=0; j<count_mu_1_Proc; j++)
             {
@@ -5632,11 +5637,11 @@ void mu_1__type_7::ArrayLimit(PermSet& Perm)
                   for (k=count_mu_1_Proc; k>j; k--)
                     {
                       value[k] = value[k-1];
-                      for (z=0; z<3; z++)
+                      for (z=0; z<4; z++)
                         pos_mu_1_Proc[k][z] = pos_mu_1_Proc[k-1][z];
                     }
                   value[j] = (*this)[i+1];
-                  for (z=0; z<3; z++)
+                  for (z=0; z<4; z++)
                     pos_mu_1_Proc[j][z] = FALSE;
                   pos_mu_1_Proc[j][i] = TRUE;
                   count_mu_1_Proc++;
@@ -5646,7 +5651,7 @@ void mu_1__type_7::ArrayLimit(PermSet& Perm)
           if (j==count_mu_1_Proc)
             {
               value[j] = (*this)[i+1];
-              for (z=0; z<3; z++)
+              for (z=0; z<4; z++)
                 pos_mu_1_Proc[j][z] = FALSE;
               pos_mu_1_Proc[j][i] = TRUE;
               count_mu_1_Proc++;
@@ -5657,14 +5662,14 @@ void mu_1__type_7::ArrayLimit(PermSet& Perm)
   if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc>1)
     {
       // limit
-      for (j=0; j<3; j++) // class priority
+      for (j=0; j<4; j++) // class priority
         {
           for (i=0; i<count_mu_1_Proc; i++) // for value priority
             {
               exists = FALSE;
-              for (k=0; k<3; k++) // step through class
+              for (k=0; k<4; k++) // step through class
                 goodset_mu_1_Proc[k] = FALSE;
-              for (k=0; k<3; k++) // step through class
+              for (k=0; k<4; k++) // step through class
                 if (pos_mu_1_Proc[i][k] && Perm.class_mu_1_Proc[k] == j)
                   {
                     exists = TRUE;
@@ -5674,12 +5679,12 @@ void mu_1__type_7::ArrayLimit(PermSet& Perm)
               if (exists)
                 {
                   split=FALSE;
-                  for (k=0; k<3; k++)
+                  for (k=0; k<4; k++)
                     if ( Perm.class_mu_1_Proc[k] == j && !goodset_mu_1_Proc[k] ) 
                       split= TRUE;
                   if (split)
                     {
-                      for (k=0; k<3; k++)
+                      for (k=0; k<4; k++)
                         if (Perm.class_mu_1_Proc[k]>j
                             || ( Perm.class_mu_1_Proc[k] == j && !goodset_mu_1_Proc[k] ) )
                           Perm.class_mu_1_Proc[k]++;
@@ -5697,26 +5702,26 @@ void mu_1__type_7::Limit(PermSet& Perm)
   // while guard
   bool while_guard, while_guard_temp;
   // sorting
-  static mu_1__type_6 value[4];
+  static mu_1__type_6 value[5];
   // limit
   bool exists;
   bool split;
   int i0;
   int count_mu_1_Value, oldcount_mu_1_Value;
-  bool pos_mu_1_Value[2][2];
-  bool goodset_mu_1_Value[2];
+  bool pos_mu_1_Value[3][3];
+  bool goodset_mu_1_Value[3];
   int count_mu_1_Proc, oldcount_mu_1_Proc;
-  bool pos_mu_1_Proc[3][3];
-  bool goodset_mu_1_Proc[3];
+  bool pos_mu_1_Proc[4][4];
+  bool goodset_mu_1_Proc[4];
   // initializing pos array
-  for (i=0; i<2; i++)
-    for (j=0; j<2; j++)
+  for (i=0; i<3; i++)
+    for (j=0; j<3; j++)
       pos_mu_1_Value[i][j]=FALSE;
   count_mu_1_Value = 0;
   while (1)
     {
       exists = FALSE;
-      for (i=0; i<2; i++)
+      for (i=0; i<3; i++)
        if (Perm.class_mu_1_Value[i] == count_mu_1_Value)
          {
            pos_mu_1_Value[count_mu_1_Value][i]=TRUE;
@@ -5726,14 +5731,14 @@ void mu_1__type_7::Limit(PermSet& Perm)
       else break;
     }
   // initializing pos array
-  for (i=0; i<3; i++)
-    for (j=0; j<3; j++)
+  for (i=0; i<4; i++)
+    for (j=0; j<4; j++)
       pos_mu_1_Proc[i][j]=FALSE;
   count_mu_1_Proc = 0;
   while (1)
     {
       exists = FALSE;
-      for (i=0; i<3; i++)
+      for (i=0; i<4; i++)
        if (Perm.class_mu_1_Proc[i] == count_mu_1_Proc)
          {
            pos_mu_1_Proc[count_mu_1_Proc][i]=TRUE;
@@ -5748,12 +5753,12 @@ void mu_1__type_7::Limit(PermSet& Perm)
 
   // refinement -- check selfloop
   // only if there is more than 1 permutation in class
-  if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3)
+  if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4)
     {
       exists = FALSE;
       split = FALSE;
       // if there exists both self loop and non-self loop
-      for (k=0; k<3; k++) // step through class
+      for (k=0; k<4; k++) // step through class
         if ((*this)[k+1][i0].mu_src.isundefined()
             ||(*this)[k+1][i0].mu_src!=k+1)
           exists = TRUE;
@@ -5764,9 +5769,9 @@ void mu_1__type_7::Limit(PermSet& Perm)
           for (i=0; i<count_mu_1_Proc; i++) // for value priority
             {
               exists = FALSE;
-              for (k=0; k<3; k++) // step through class
+              for (k=0; k<4; k++) // step through class
                 goodset_mu_1_Proc[k] = FALSE;
-              for (k=0; k<3; k++) // step through class
+              for (k=0; k<4; k++) // step through class
                 if (pos_mu_1_Proc[i][k] 
                     && !(*this)[k+1][i0].mu_src.isundefined()
                     && (*this)[k+1][i0].mu_src==k+1)
@@ -5777,15 +5782,15 @@ void mu_1__type_7::Limit(PermSet& Perm)
               if (exists)
                 {
                   split=FALSE;
-                  for (k=0; k<3; k++)
+                  for (k=0; k<4; k++)
                     if ( pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k] ) 
                           split= TRUE;
                   if (split)
                     {
                       for (j=count_mu_1_Proc; j>i; j--)
-                        for (k=0; k<3; k++)
+                        for (k=0; k<4; k++)
                           pos_mu_1_Proc[j][k] = pos_mu_1_Proc[j-1][k];
-                      for (k=0; k<3; k++)
+                      for (k=0; k<4; k++)
                         {
                           if (pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k])
                             pos_mu_1_Proc[i][k] = FALSE;
@@ -5801,12 +5806,12 @@ void mu_1__type_7::Limit(PermSet& Perm)
 
   // refinement -- check selfloop
   // only if there is more than 1 permutation in class
-  if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3)
+  if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4)
     {
       exists = FALSE;
       split = FALSE;
       // if there exists both self loop and non-self loop
-      for (k=0; k<3; k++) // step through class
+      for (k=0; k<4; k++) // step through class
         if ((*this)[k+1][i0].mu_fwd_to.isundefined()
             ||(*this)[k+1][i0].mu_fwd_to!=k+1)
           exists = TRUE;
@@ -5817,9 +5822,9 @@ void mu_1__type_7::Limit(PermSet& Perm)
           for (i=0; i<count_mu_1_Proc; i++) // for value priority
             {
               exists = FALSE;
-              for (k=0; k<3; k++) // step through class
+              for (k=0; k<4; k++) // step through class
                 goodset_mu_1_Proc[k] = FALSE;
-              for (k=0; k<3; k++) // step through class
+              for (k=0; k<4; k++) // step through class
                 if (pos_mu_1_Proc[i][k] 
                     && !(*this)[k+1][i0].mu_fwd_to.isundefined()
                     && (*this)[k+1][i0].mu_fwd_to==k+1)
@@ -5830,15 +5835,15 @@ void mu_1__type_7::Limit(PermSet& Perm)
               if (exists)
                 {
                   split=FALSE;
-                  for (k=0; k<3; k++)
+                  for (k=0; k<4; k++)
                     if ( pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k] ) 
                           split= TRUE;
                   if (split)
                     {
                       for (j=count_mu_1_Proc; j>i; j--)
-                        for (k=0; k<3; k++)
+                        for (k=0; k<4; k++)
                           pos_mu_1_Proc[j][k] = pos_mu_1_Proc[j-1][k];
-                      for (k=0; k<3; k++)
+                      for (k=0; k<4; k++)
                         {
                           if (pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k])
                             pos_mu_1_Proc[i][k] = FALSE;
@@ -5855,8 +5860,8 @@ void mu_1__type_7::Limit(PermSet& Perm)
 
   // refinement -- checking priority in general
   while_guard = FALSE;
-  while_guard = while_guard || (Perm.MTO_class_mu_1_Value() && count_mu_1_Value<2);
-  while_guard = while_guard || (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3);
+  while_guard = while_guard || (Perm.MTO_class_mu_1_Value() && count_mu_1_Value<3);
+  while_guard = while_guard || (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4);
   while ( while_guard )
     {
       oldcount_mu_1_Value = count_mu_1_Value;
@@ -5868,15 +5873,15 @@ void mu_1__type_7::Limit(PermSet& Perm)
       // refinement -- graph structure for a single scalarset
       //               as in array S1 of S1
       // only if there is more than 1 permutation in class
-      if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3)
+      if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4)
         {
           exists = FALSE;
           split = FALSE;
-          for (k=0; k<3; k++) // step through class
+          for (k=0; k<4; k++) // step through class
             if (!(*this)[k+1][i0].mu_src.isundefined()
                 &&(*this)[k+1][i0].mu_src!=k+1
                 &&(*this)[k+1][i0].mu_src>=1
-                &&(*this)[k+1][i0].mu_src<=3)
+                &&(*this)[k+1][i0].mu_src<=4)
               exists = TRUE;
           if (exists)
             {
@@ -5885,14 +5890,14 @@ void mu_1__type_7::Limit(PermSet& Perm)
                   for (j=0; j<count_mu_1_Proc; j++) // for value priority
                     {
                       exists = FALSE;
-                      for (k=0; k<3; k++) // step through class
+                      for (k=0; k<4; k++) // step through class
                         goodset_mu_1_Proc[k] = FALSE;
-                      for (k=0; k<3; k++) // step through class
+                      for (k=0; k<4; k++) // step through class
                         if (pos_mu_1_Proc[i][k] 
                             && !(*this)[k+1][i0].mu_src.isundefined()
                             && (*this)[k+1][i0].mu_src!=k+1
                             && (*this)[k+1][i0].mu_src>=1
-                            && (*this)[k+1][i0].mu_src<=3
+                            && (*this)[k+1][i0].mu_src<=4
                             && pos_mu_1_Proc[j][(*this)[k+1][i0].mu_src-1])
                           {
                             exists = TRUE;
@@ -5901,15 +5906,15 @@ void mu_1__type_7::Limit(PermSet& Perm)
                       if (exists)
                         {
                           split=FALSE;
-                          for (k=0; k<3; k++)
+                          for (k=0; k<4; k++)
                             if ( pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k] ) 
                               split= TRUE;
                           if (split)
                             {
                               for (j=count_mu_1_Proc; j>i; j--)
-                                for (k=0; k<3; k++)
+                                for (k=0; k<4; k++)
                                   pos_mu_1_Proc[j][k] = pos_mu_1_Proc[j-1][k];
-                              for (k=0; k<3; k++)
+                              for (k=0; k<4; k++)
                                 {
                                   if (pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k])
                                     pos_mu_1_Proc[i][k] = FALSE;
@@ -5927,15 +5932,15 @@ void mu_1__type_7::Limit(PermSet& Perm)
       // refinement -- graph structure for a single scalarset
       //               as in array S1 of S1
       // only if there is more than 1 permutation in class
-      if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3)
+      if (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4)
         {
           exists = FALSE;
           split = FALSE;
-          for (k=0; k<3; k++) // step through class
+          for (k=0; k<4; k++) // step through class
             if (!(*this)[k+1][i0].mu_fwd_to.isundefined()
                 &&(*this)[k+1][i0].mu_fwd_to!=k+1
                 &&(*this)[k+1][i0].mu_fwd_to>=1
-                &&(*this)[k+1][i0].mu_fwd_to<=3)
+                &&(*this)[k+1][i0].mu_fwd_to<=4)
               exists = TRUE;
           if (exists)
             {
@@ -5944,14 +5949,14 @@ void mu_1__type_7::Limit(PermSet& Perm)
                   for (j=0; j<count_mu_1_Proc; j++) // for value priority
                     {
                       exists = FALSE;
-                      for (k=0; k<3; k++) // step through class
+                      for (k=0; k<4; k++) // step through class
                         goodset_mu_1_Proc[k] = FALSE;
-                      for (k=0; k<3; k++) // step through class
+                      for (k=0; k<4; k++) // step through class
                         if (pos_mu_1_Proc[i][k] 
                             && !(*this)[k+1][i0].mu_fwd_to.isundefined()
                             && (*this)[k+1][i0].mu_fwd_to!=k+1
                             && (*this)[k+1][i0].mu_fwd_to>=1
-                            && (*this)[k+1][i0].mu_fwd_to<=3
+                            && (*this)[k+1][i0].mu_fwd_to<=4
                             && pos_mu_1_Proc[j][(*this)[k+1][i0].mu_fwd_to-1])
                           {
                             exists = TRUE;
@@ -5960,15 +5965,15 @@ void mu_1__type_7::Limit(PermSet& Perm)
                       if (exists)
                         {
                           split=FALSE;
-                          for (k=0; k<3; k++)
+                          for (k=0; k<4; k++)
                             if ( pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k] ) 
                               split= TRUE;
                           if (split)
                             {
                               for (j=count_mu_1_Proc; j>i; j--)
-                                for (k=0; k<3; k++)
+                                for (k=0; k<4; k++)
                                   pos_mu_1_Proc[j][k] = pos_mu_1_Proc[j-1][k];
-                              for (k=0; k<3; k++)
+                              for (k=0; k<4; k++)
                                 {
                                   if (pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k])
                                     pos_mu_1_Proc[i][k] = FALSE;
@@ -5990,12 +5995,12 @@ void mu_1__type_7::Limit(PermSet& Perm)
       // refinement -- graph structure for two scalarsets
       //               as in array S1 of S2
       // only if there is more than 1 permutation in class
-      if ( (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<3)
-           || ( Perm.MTO_class_mu_1_Value() && count_mu_1_Value<2) )
+      if ( (Perm.MTO_class_mu_1_Proc() && count_mu_1_Proc<4)
+           || ( Perm.MTO_class_mu_1_Value() && count_mu_1_Value<3) )
         {
           exists = FALSE;
           split = FALSE;
-          for (k=0; k<3; k++) // step through class
+          for (k=0; k<4; k++) // step through class
             if ((*this)[k+1][i0].mu_value.isundefined())
               exists = TRUE;
             else
@@ -6006,35 +6011,35 @@ void mu_1__type_7::Limit(PermSet& Perm)
                 for (j=0; j<count_mu_1_Value; j++) //scan through element priority
                   {
                     exists = FALSE;
-                    for (k=0; k<3; k++) // initialize goodset
+                    for (k=0; k<4; k++) // initialize goodset
                       goodset_mu_1_Proc[k] = FALSE;
-                    for (k=0; k<2; k++) // initialize goodset
+                    for (k=0; k<3; k++) // initialize goodset
                       goodset_mu_1_Value[k] = FALSE;
-                    for (k=0; k<3; k++) // scan array index
+                    for (k=0; k<4; k++) // scan array index
                       // set goodsets
                       if (pos_mu_1_Proc[i][k] 
                           && !(*this)[k+1][i0].mu_value.isundefined()
-                          && pos_mu_1_Value[j][(*this)[k+1][i0].mu_value-4])
+                          && pos_mu_1_Value[j][(*this)[k+1][i0].mu_value-5])
                         {
                           exists = TRUE;
                           goodset_mu_1_Proc[k] = TRUE;
-                          goodset_mu_1_Value[(*this)[k+1][i0].mu_value-4] = TRUE;
+                          goodset_mu_1_Value[(*this)[k+1][i0].mu_value-5] = TRUE;
                         }
                     if (exists)
                       {
                         // set split for the array index type
                         split=FALSE;
-                        for (k=0; k<3; k++)
+                        for (k=0; k<4; k++)
                           if ( pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k] )
                             split= TRUE;
                         if (split)
                           {
                             // move following pos entries down 1 step
                             for (z=count_mu_1_Proc; z>i; z--)
-                              for (k=0; k<3; k++)
+                              for (k=0; k<4; k++)
                                 pos_mu_1_Proc[z][k] = pos_mu_1_Proc[z-1][k];
                             // split pos
-                            for (k=0; k<3; k++)
+                            for (k=0; k<4; k++)
                               {
                                 if (pos_mu_1_Proc[i][k] && !goodset_mu_1_Proc[k])
                                   pos_mu_1_Proc[i][k] = FALSE;
@@ -6045,17 +6050,17 @@ void mu_1__type_7::Limit(PermSet& Perm)
                           }
                         // set split for the element type
                         split=FALSE;
-                        for (k=0; k<2; k++)
+                        for (k=0; k<3; k++)
                           if ( pos_mu_1_Value[j][k] && !goodset_mu_1_Value[k] )
                             split= TRUE;
                         if (split)
                           {
                             // move following pos entries down 1 step
                             for (z=count_mu_1_Value; z>j; z--)
-                              for (k=0; k<2; k++)
+                              for (k=0; k<3; k++)
                                 pos_mu_1_Value[z][k] = pos_mu_1_Value[z-1][k];
                             // split pos
-                            for (k=0; k<2; k++)
+                            for (k=0; k<3; k++)
                               {
                                 if (pos_mu_1_Value[j][k] && !goodset_mu_1_Value[k])
                                   pos_mu_1_Value[j][k] = FALSE;
@@ -6074,31 +6079,31 @@ void mu_1__type_7::Limit(PermSet& Perm)
       while_guard = while_guard || (oldcount_mu_1_Proc!=count_mu_1_Proc);
       while_guard_temp = while_guard;
       while_guard = FALSE;
-      while_guard = while_guard || count_mu_1_Value<2;
-      while_guard = while_guard || count_mu_1_Proc<3;
+      while_guard = while_guard || count_mu_1_Value<3;
+      while_guard = while_guard || count_mu_1_Proc<4;
       while_guard = while_guard && while_guard_temp;
     } // end while
   // enter the result into class
   if (Perm.MTO_class_mu_1_Value())
     {
-      for (i=0; i<2; i++)
-        for (j=0; j<2; j++)
+      for (i=0; i<3; i++)
+        for (j=0; j<3; j++)
           if (pos_mu_1_Value[i][j])
             Perm.class_mu_1_Value[j] = i;
       Perm.undefined_class_mu_1_Value=0;
-      for (j=0; j<2; j++)
+      for (j=0; j<3; j++)
         if (Perm.class_mu_1_Value[j]>Perm.undefined_class_mu_1_Value)
           Perm.undefined_class_mu_1_Value=Perm.class_mu_1_Value[j];
     }
   // enter the result into class
   if (Perm.MTO_class_mu_1_Proc())
     {
-      for (i=0; i<3; i++)
-        for (j=0; j<3; j++)
+      for (i=0; i<4; i++)
+        for (j=0; j<4; j++)
           if (pos_mu_1_Proc[i][j])
             Perm.class_mu_1_Proc[j] = i;
       Perm.undefined_class_mu_1_Proc=0;
-      for (j=0; j<3; j++)
+      for (j=0; j<4; j++)
         if (Perm.class_mu_1_Proc[j]>Perm.undefined_class_mu_1_Proc)
           Perm.undefined_class_mu_1_Proc=Perm.class_mu_1_Proc[j];
     }
