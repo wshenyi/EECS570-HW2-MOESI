@@ -36,7 +36,7 @@
 
 # path for including mu_verifier.C etc.
 INCLUDEPATH = Murphi3.1/include
-FILENAME = example
+FILENAME = msi
 
 # choice of compiler (with REQUIRED options)
 #CXX = g++ #                                 # for beet, elaines, dawns, cabbage
