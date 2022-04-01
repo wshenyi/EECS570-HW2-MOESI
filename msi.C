@@ -313,7 +313,7 @@ class mu_1_MessageType: public mu__byte
   };
 };
 
-char *mu_1_MessageType::values[] = {"GetS","GetM","PutS","PutM","Data","InvAck","InvAllAck","Inv","PutAck","FwdGetS","FwdGetM","FwdGetSAck","FwdGetMAck",NULL };
+char *mu_1_MessageType::values[] = {"GetS","GetM","PutS","PutM","Data","InvAck","InvAllAck","PutAck","FwdGetSAck","FwdGetMAck","Inv","FwdGetS","FwdGetM",NULL };
 
 /*** end of enum declaration ***/
 mu_1_MessageType mu_1_MessageType_undefined_var;
@@ -526,7 +526,7 @@ class mu_1__type_0: public mu__byte
   };
 };
 
-char *mu_1__type_0::values[] = {"Dir_M","Dir_S","Dir_I","Dir_MS_D","Dir_SM_A","Dir_MX_A",NULL };
+char *mu_1__type_0::values[] = {"Dir_M","Dir_S","Dir_I","Dir_MX_D","Dir_SM_A","Dir_MM_A",NULL };
 
 /*** end of enum declaration ***/
 mu_1__type_0 mu_1__type_0_undefined_var;
@@ -1790,18 +1790,18 @@ const int mu_PutM = 10;
 const int mu_Data = 11;
 const int mu_InvAck = 12;
 const int mu_InvAllAck = 13;
-const int mu_Inv = 14;
-const int mu_PutAck = 15;
-const int mu_FwdGetS = 16;
-const int mu_FwdGetM = 17;
-const int mu_FwdGetSAck = 18;
-const int mu_FwdGetMAck = 19;
+const int mu_PutAck = 14;
+const int mu_FwdGetSAck = 15;
+const int mu_FwdGetMAck = 16;
+const int mu_Inv = 17;
+const int mu_FwdGetS = 18;
+const int mu_FwdGetM = 19;
 const int mu_Dir_M = 20;
 const int mu_Dir_S = 21;
 const int mu_Dir_I = 22;
-const int mu_Dir_MS_D = 23;
+const int mu_Dir_MX_D = 23;
 const int mu_Dir_SM_A = 24;
-const int mu_Dir_MX_A = 25;
+const int mu_Dir_MM_A = 25;
 const int mu_Proc_M = 26;
 const int mu_Proc_S = 27;
 const int mu_Proc_I = 28;
@@ -2053,11 +2053,11 @@ mu_DirNode.mu_owner = mu_msg.mu_src;
 mu_Send ( mu_Data, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_DirNode.mu_value, mu_1_Node_undefined_var, (int)mu_cnt );
 break;
 case mu_PutS:
-mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 break;
 case mu_PutM:
 if ( !((mu_msg.mu_src) != (mu_DirNode.mu_owner)) ) Error.Error("Assertion failed: error at Dir_I: PutM from owner");
-mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 break;
 default:
 mu_ErrorUnhandledMsg ( mu_msg, (int)mu_Directory );
@@ -2094,7 +2094,7 @@ mu_DirNode.mu_sharers.undefine();
 mu_DirNode.mu_owner = mu_msg.mu_src;
 break;
 case mu_PutS:
-mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 if ( mu_IsSharer( mu_msg.mu_src ) )
 {
 if ( (mu_cnt) == (1) )
@@ -2106,7 +2106,7 @@ mu_RemoveFromSharersList ( mu_msg.mu_src );
 break;
 case mu_PutM:
 if ( !((mu_msg.mu_src) != (mu_DirNode.mu_owner)) ) Error.Error("Assertion failed: error at Dir_S: PutM from owner");
-mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_RemoveFromSharersList ( mu_msg.mu_src );
 break;
 default:
@@ -2117,20 +2117,20 @@ break;
 case mu_Dir_M:
 switch ((int) mu_msg.mu_mtype) {
 case mu_GetS:
-mu_DirNode.mu_state = mu_Dir_MX_A;
+mu_DirNode.mu_state = mu_Dir_MX_D;
 mu_Send ( mu_FwdGetS, mu_DirNode.mu_owner, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_msg.mu_src, 0 );
 mu_AddToSharersList ( mu_msg.mu_src );
 mu_AddToSharersList ( mu_DirNode.mu_owner );
 mu_DirNode.mu_owner = mu_Directory;
 break;
 case mu_GetM:
-mu_DirNode.mu_state = mu_Dir_MX_A;
+mu_DirNode.mu_state = mu_Dir_MM_A;
 mu_Send ( mu_FwdGetM, mu_DirNode.mu_owner, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_msg.mu_src, 0 );
 mu_DirNode.mu_value = mu_msg.mu_value;
 mu_DirNode.mu_owner = mu_msg.mu_src;
 break;
 case mu_PutS:
-mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 break;
 case mu_PutM:
 if ( (mu_DirNode.mu_owner) == (mu_msg.mu_src) )
@@ -2140,14 +2140,14 @@ mu_LastWrite = mu_DirNode.mu_value;
 mu_DirNode.mu_owner = mu_Directory;
 mu_DirNode.mu_state = mu_Dir_I;
 }
-mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 break;
 default:
 mu_ErrorUnhandledMsg ( mu_msg, (int)mu_Directory );
 break;
 }
 break;
-case mu_Dir_MS_D:
+case mu_Dir_MX_D:
 switch ((int) mu_msg.mu_mtype) {
 case mu_GetS:
 mu_msg_processed = mu_false;
@@ -2156,13 +2156,22 @@ case mu_GetM:
 mu_msg_processed = mu_false;
 break;
 case mu_PutS:
-mu_RemoveFromSharersList ( mu_msg.mu_src );
-mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_msg_processed = mu_false;
 break;
 case mu_PutM:
-if ( !((mu_msg.mu_src) != (mu_DirNode.mu_owner)) ) Error.Error("Assertion failed: error at Dir_MS_D: PutM from owner");
-mu_RemoveFromSharersList ( mu_msg.mu_src );
-mu_Send ( mu_PutAck, mu_msg.mu_src, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_msg_processed = mu_false;
+break;
+case mu_FwdGetSAck:
+if ( (mu_cnt) == (0) )
+{
+mu_DirNode.mu_state = mu_Dir_I;
+}
+else
+{
+mu_DirNode.mu_state = mu_Dir_S;
+}
+mu_DirNode.mu_value = mu_msg.mu_value;
+mu_LastWrite = mu_DirNode.mu_value;
 break;
 case mu_Data:
 if ( (mu_cnt) == (0) )
@@ -2181,7 +2190,7 @@ mu_ErrorUnhandledMsg ( mu_msg, (int)mu_Directory );
 break;
 }
 break;
-case mu_Dir_MX_A:
+case mu_Dir_MM_A:
 switch ((int) mu_msg.mu_mtype) {
 case mu_GetS:
 mu_msg_processed = mu_false;
@@ -2197,9 +2206,6 @@ mu_msg_processed = mu_false;
 break;
 case mu_Data:
 mu_msg_processed = mu_false;
-break;
-case mu_FwdGetSAck:
-mu_DirNode.mu_state = mu_Dir_MS_D;
 break;
 case mu_FwdGetMAck:
 mu_DirNode.mu_state = mu_Dir_M;
@@ -2443,14 +2449,13 @@ case mu_Proc_M:
 switch ((int) mu_msg.mu_mtype) {
 case mu_FwdGetS:
 mu_pstate = mu_Proc_S;
-mu_Send ( mu_Data, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
-mu_Send ( mu_FwdGetSAck, (int)mu_Directory, (int)mu_p, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_FwdGetSAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
 mu_Send ( mu_Data, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
 break;
 case mu_FwdGetM:
 mu_pstate = mu_Proc_I;
 mu_Send ( mu_Data, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
-mu_Send ( mu_FwdGetMAck, (int)mu_Directory, (int)mu_p, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_FwdGetMAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_pvalue.undefine();
 break;
 default:
@@ -2462,14 +2467,13 @@ case mu_Proc_MI_A:
 switch ((int) mu_msg.mu_mtype) {
 case mu_FwdGetS:
 mu_pstate = mu_Proc_SI_A;
-mu_Send ( mu_Data, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
-mu_Send ( mu_FwdGetSAck, (int)mu_Directory, (int)mu_p, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_FwdGetSAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
 mu_Send ( mu_Data, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
 break;
 case mu_FwdGetM:
 mu_pstate = mu_Proc_II_A;
 mu_Send ( mu_Data, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_pvalue, mu_1_Node_undefined_var, 0 );
-mu_Send ( mu_FwdGetMAck, (int)mu_Directory, (int)mu_p, mu_ForwardChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
+mu_Send ( mu_FwdGetMAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 break;
 case mu_PutAck:
 mu_pstate = mu_Proc_I;
