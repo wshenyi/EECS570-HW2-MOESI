@@ -29,45 +29,35 @@ Algorithm:
 
 Memory usage:
 
-	* The size of each state is 2376 bits (rounded up to 300 bytes).
+	* The size of each state is 2664 bits (rounded up to 336 bytes).
 	* The memory allocated for the hash table and state queue is
 	  8 Mbytes.
 	  With two words of overhead per state, the maximum size of
-	  the state space is 26293 states.
+	  the state space is 23509 states.
 	   * Use option "-k" or "-m" to increase this, if necessary.
-	* Capacity in queue for breadth-first search: 2629 states.
+	* Capacity in queue for breadth-first search: 2350 states.
 	   * Change the constant gPercentActiveStates in mu_prolog.inc
 	     to increase this, if necessary.
 
 Warning: No trace will not be printed in the case of protocol errors!
          Check the options if you want to have error traces.
 
-Progress Report:
+====================Error Msg====================
+mtype: FwdGetS
+src: Directory
+src_state: DirNode.state:Dir_S
+dst_state: Procs[Proc_1].state:Proc_S
 
-	1000 states explored in 0.10s, with 2373 rules fired and 399 states in the queue.
-	2000 states explored in 0.10s, with 5461 rules fired and 597 states in the queue.
-	3000 states explored in 0.10s, with 8378 rules fired and 743 states in the queue.
-	4000 states explored in 0.10s, with 11246 rules fired and 968 states in the queue.
-	5000 states explored in 0.13s, with 14381 rules fired and 1130 states in the queue.
-	6000 states explored in 0.16s, with 17654 rules fired and 1233 states in the queue.
-	7000 states explored in 0.19s, with 21329 rules fired and 1181 states in the queue.
-	8000 states explored in 0.23s, with 25113 rules fired and 1004 states in the queue.
-	9000 states explored in 0.26s, with 28714 rules fired and 910 states in the queue.
-	10000 states explored in 0.29s, with 31843 rules fired and 1042 states in the queue.
-	11000 states explored in 0.32s, with 35178 rules fired and 1088 states in the queue.
-	12000 states explored in 0.35s, with 39225 rules fired and 872 states in the queue.
-	13000 states explored in 0.39s, with 43715 rules fired and 464 states in the queue.
-	14000 states explored in 0.43s, with 47674 rules fired and 197 states in the queue.
 
 ==========================================================================
 
-Status:
+Result:
 
-	No error found.
+	Error: Unhandled message type!
 
 State Space Explored:
 
-	14328 states, 49269 rules fired in 0.44s.
+	774 states, 1680 rules fired in 0.10s.
 
 Analysis of State Space:
 
@@ -75,7 +65,7 @@ Analysis of State Space:
 	If you are running with symmetry, this may be why.  Otherwise,
 	please run this program with "-pr" for the rules information.
 	The maximum size for the multiset "DirNode.sharers" is: 3.
-	The maximum size for the multiset "Net[Directory]" is: 4.
+	The maximum size for the multiset "Net[Directory]" is: 3.
 	The maximum size for the multiset "Net[Proc_1]" is: 3.
 	The maximum size for the multiset "Net[Proc_2]" is: 2.
 	The maximum size for the multiset "Net[Proc_3]" is: 2.
