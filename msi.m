@@ -36,8 +36,7 @@ type
                       Data,
                       InvAck,
                       PutAck,
-                      FwdGetSAck,
-                      FwdGetMAck,
+                      FwdAck,
                       -- Forward channel
                       Inv,
                       FwdGetS,
@@ -301,7 +300,7 @@ Begin
       msg_processed := false;
     case PutM:
       msg_processed := false;
-    case FwdGetSAck:
+    case FwdAck:
       if cnt = 0 then
         DirNode.state := Dir_I;
       else
@@ -333,7 +332,7 @@ Begin
       msg_processed := false;
     case Data:
       msg_processed := false;
-    case FwdGetMAck:
+    case FwdAck:
       DirNode.state := Dir_M;
     else
       ErrorUnhandledMsg(msg, Directory);
@@ -501,12 +500,12 @@ Begin
     switch msg.mtype
     case FwdGetS:
       pstate := Proc_S;
-      Send(FwdGetSAck, Directory,  p, ResponseChannel, pvalue, UNDEFINED, 0);
+      Send(FwdAck, Directory,  p, ResponseChannel, pvalue, UNDEFINED, 0);
       Send(Data, msg.fwd_to, p, ResponseChannel, pvalue, UNDEFINED, 0);
     case FwdGetM:
       pstate := Proc_I;
       Send(Data, msg.fwd_to, p, ResponseChannel, pvalue, UNDEFINED, 0);
-      Send(FwdGetMAck, Directory,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+      Send(FwdAck, Directory,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       undefine pvalue;
     else
       ErrorUnhandledMsg(msg, p);
@@ -516,12 +515,12 @@ Begin
     switch msg.mtype
     case FwdGetS:
       pstate := Proc_SI_A;
-      Send(FwdGetSAck, Directory,  p, ResponseChannel, pvalue, UNDEFINED, 0);
+      Send(FwdAck, Directory,  p, ResponseChannel, pvalue, UNDEFINED, 0);
       Send(Data, msg.fwd_to, p, ResponseChannel, pvalue, UNDEFINED, 0);
     case FwdGetM:
       pstate := Proc_II_A;
       Send(Data, msg.fwd_to, p, ResponseChannel, pvalue, UNDEFINED, 0);
-      Send(FwdGetMAck, Directory,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
+      Send(FwdAck, Directory,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
     case PutAck:
       pstate := Proc_I;
       undefine pvalue;
