@@ -55,8 +55,8 @@ CFLAGS = -Wno-write-strings -m32
 # rules for compiling
 
 out:	base opt
-	./$(FILENAME) > $(FILENAME).out
-	./$(FILENAME)_opt > $(FILENAME)_opt.out
+	./$(FILENAME) -m128 > $(FILENAME).out
+	./$(FILENAME)_opt -m128 > $(FILENAME)_opt.out
 
 base:
 	./Murphi3.1/bin/mu $(FILENAME).m
