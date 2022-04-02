@@ -54,21 +54,17 @@ CFLAGS = -Wno-write-strings -m32
 
 # rules for compiling
 
-out:	$(FILENAME)_mu opt
+out:	base opt
 	./$(FILENAME) > $(FILENAME).out
 	./$(FILENAME)_opt > $(FILENAME)_opt.out
 
-$(FILENAME):	$(FILENAME)_mu
-	${CXX} ${CFLAGS} ${OFLAGS} -o $@ $@.C -I${INCLUDEPATH} -lm
-
-$(FILENAME)_mu:
+base:
 	./Murphi3.1/bin/mu $(FILENAME).m
+	${CXX} ${CFLAGS} ${OFLAGS} -o $(FILENAME) $(FILENAME).C -I${INCLUDEPATH} -lm	
 
-opt:	opt.C
-	${CXX} ${CFLAGS} ${OFLAGS} -o $(FILENAME)_opt $(FILENAME)_opt.C -I${INCLUDEPATH} -lm
-
-opt.C:
+opt:
 	./Murphi3.1/bin/mu $(FILENAME)_opt.m
+	${CXX} ${CFLAGS} ${OFLAGS} -o $(FILENAME)_opt $(FILENAME)_opt.C -I${INCLUDEPATH} -lm	
 
 clean:	
 	rm -rf $(FILENAME) $(FILENAME)_opt *.out *.C
