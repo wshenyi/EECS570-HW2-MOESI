@@ -1,5 +1,5 @@
 
--- Three-state 3-hop MSI protocol
+-- Three-state 3-hop MESI protocol
 
 ----------------------------------------------------------------------
 -- Constants

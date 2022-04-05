@@ -45,26 +45,26 @@ Warning: No trace will not be printed in the case of protocol errors!
 Progress Report:
 
 	1000 states explored in 0.10s, with 2229 rules fired and 464 states in the queue.
-	2000 states explored in 0.14s, with 5283 rules fired and 688 states in the queue.
-	3000 states explored in 0.18s, with 8150 rules fired and 959 states in the queue.
-	4000 states explored in 0.22s, with 11581 rules fired and 1148 states in the queue.
-	5000 states explored in 0.26s, with 14823 rules fired and 1438 states in the queue.
-	6000 states explored in 0.30s, with 17913 rules fired and 1733 states in the queue.
-	7000 states explored in 0.36s, with 22034 rules fired and 1786 states in the queue.
-	8000 states explored in 0.43s, with 25085 rules fired and 2116 states in the queue.
-	9000 states explored in 0.50s, with 29761 rules fired and 1922 states in the queue.
-	10000 states explored in 0.54s, with 33092 rules fired and 2164 states in the queue.
-	11000 states explored in 0.60s, with 37377 rules fired and 2098 states in the queue.
-	12000 states explored in 0.65s, with 41358 rules fired and 2132 states in the queue.
-	13000 states explored in 0.71s, with 46155 rules fired and 1896 states in the queue.
-	14000 states explored in 0.78s, with 51052 rules fired and 1685 states in the queue.
-	15000 states explored in 0.84s, with 55647 rules fired and 1464 states in the queue.
-	16000 states explored in 0.88s, with 59208 rules fired and 1543 states in the queue.
-	17000 states explored in 0.94s, with 63425 rules fired and 1488 states in the queue.
-	18000 states explored in 1.00s, with 68098 rules fired and 1347 states in the queue.
-	19000 states explored in 1.07s, with 73150 rules fired and 1126 states in the queue.
-	20000 states explored in 1.12s, with 78404 rules fired and 814 states in the queue.
-	21000 states explored in 1.18s, with 84285 rules fired and 251 states in the queue.
+	2000 states explored in 0.11s, with 5283 rules fired and 688 states in the queue.
+	3000 states explored in 0.15s, with 8150 rules fired and 959 states in the queue.
+	4000 states explored in 0.20s, with 11581 rules fired and 1148 states in the queue.
+	5000 states explored in 0.24s, with 14823 rules fired and 1438 states in the queue.
+	6000 states explored in 0.28s, with 17913 rules fired and 1733 states in the queue.
+	7000 states explored in 0.34s, with 22034 rules fired and 1786 states in the queue.
+	8000 states explored in 0.38s, with 25085 rules fired and 2116 states in the queue.
+	9000 states explored in 0.44s, with 29761 rules fired and 1922 states in the queue.
+	10000 states explored in 0.48s, with 33092 rules fired and 2164 states in the queue.
+	11000 states explored in 0.54s, with 37377 rules fired and 2098 states in the queue.
+	12000 states explored in 0.59s, with 41358 rules fired and 2132 states in the queue.
+	13000 states explored in 0.64s, with 46155 rules fired and 1896 states in the queue.
+	14000 states explored in 0.69s, with 51052 rules fired and 1685 states in the queue.
+	15000 states explored in 0.74s, with 55647 rules fired and 1464 states in the queue.
+	16000 states explored in 0.77s, with 59208 rules fired and 1543 states in the queue.
+	17000 states explored in 0.81s, with 63425 rules fired and 1488 states in the queue.
+	18000 states explored in 0.86s, with 68098 rules fired and 1347 states in the queue.
+	19000 states explored in 0.91s, with 73150 rules fired and 1126 states in the queue.
+	20000 states explored in 0.99s, with 78404 rules fired and 814 states in the queue.
+	21000 states explored in 1.08s, with 84285 rules fired and 251 states in the queue.
 
 ==========================================================================
 
@@ -74,7 +74,7 @@ Status:
 
 State Space Explored:
 
-	21325 states, 86368 rules fired in 1.20s.
+	21325 states, 86368 rules fired in 1.10s.
 
 Analysis of State Space:
 
