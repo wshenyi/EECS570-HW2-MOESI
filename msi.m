@@ -274,7 +274,6 @@ Begin
     case GetM:
       DirNode.state := Dir_MM_A;
       Send(FwdGetM, DirNode.owner, Directory, ForwardChannel, UNDEFINED, msg.src, 0);
-      DirNode.value := msg.value;
       DirNode.owner := msg.src;
     case PutS:
       Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);
@@ -444,8 +443,6 @@ Begin
       Send(InvAck, msg.fwd_to, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       Send(InvAck, Directory, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       undefine pvalue;
-    case PutAck:
-
     else
       ErrorUnhandledMsg(msg, p);
     endswitch;

@@ -2144,7 +2144,6 @@ break;
 case mu_GetM:
 mu_DirNode.mu_state = mu_Dir_MM_A;
 mu_Send ( mu_FwdGetM, mu_DirNode.mu_owner, (int)mu_Directory, mu_ForwardChannel, mu_1_Value_undefined_var, mu_msg.mu_src, 0 );
-mu_DirNode.mu_value = mu_msg.mu_value;
 mu_DirNode.mu_owner = mu_msg.mu_src;
 break;
 case mu_PutS:
@@ -2365,8 +2364,6 @@ mu_pstate = mu_Proc_I;
 mu_Send ( mu_InvAck, mu_msg.mu_fwd_to, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_Send ( mu_InvAck, (int)mu_Directory, (int)mu_p, mu_ResponseChannel, mu_1_Value_undefined_var, mu_1_Node_undefined_var, 0 );
 mu_pvalue.undefine();
-break;
-case mu_PutAck:
 break;
 default:
 mu_ErrorUnhandledMsg ( mu_msg, (int)mu_p );
