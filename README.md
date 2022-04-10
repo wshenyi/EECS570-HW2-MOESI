@@ -1,4 +1,4 @@
-# 5 state 3-hop MOESI cache coherence protocol
+# Five-state 3-hop MOESI cache coherence protocol
 
 The key idea to solve race between Get and Put message at directory (homenode) is that adding FwdAck to make sure the forward message
 (triggered by Get message) is received by processors and then begin process Put messages.
