@@ -280,7 +280,6 @@ Begin
     case PutM:
       if DirNode.owner = msg.src then
         DirNode.value := msg.value;
-        LastWrite := DirNode.value;
         DirNode.owner := Directory;
         DirNode.state := Dir_I;
       endif;
@@ -306,7 +305,6 @@ Begin
         DirNode.state := Dir_S;
       endif;
       DirNode.value := msg.value;
-      LastWrite := DirNode.value;
     case Data:
       if cnt = 0 then
         DirNode.state := Dir_I;
@@ -314,7 +312,6 @@ Begin
         DirNode.state := Dir_S;
       endif;
       DirNode.value := msg.value;
-      LastWrite := DirNode.value;
     else
       ErrorUnhandledMsg(msg, Directory);
     endswitch;
@@ -401,11 +398,13 @@ Begin
       if msg.src = Directory then -- data is from directory controller
         if msg.ack_cnt = 0 then
           pstate := Proc_M;
+          LastWrite := pvalue;
         else
           assert (pcnt <= 0) "error at Proc_IM_AD, ack_cnt > 0.";
           pcnt :=  pcnt + msg.ack_cnt;
           if pcnt = 0 then
             pstate := Proc_M;
+            LastWrite := pvalue;
           else
             pstate := Proc_IM_A;
           endif;
@@ -413,8 +412,8 @@ Begin
       else -- data is from previous owner
         -- pcnt := 0;
         pstate := Proc_M;
+        LastWrite := pvalue;
       endif;
-      pvalue := msg.value;
     case InvAck:
       pcnt := pcnt - 1;
     else
@@ -431,6 +430,7 @@ Begin
       pcnt := pcnt - 1;
       if pcnt = 0 then
         pstate := Proc_M;
+        LastWrite := pvalue;
       endif;
     else
       ErrorUnhandledMsg(msg, p);
@@ -461,16 +461,17 @@ Begin
       assert (msg.src = Directory) "error at Proc_SM_AD, Data not from dir.";
       if msg.ack_cnt = 0 then
         pstate := Proc_M;
+        LastWrite := pvalue;
       else
         assert (pcnt <= 0) "error at Proc_SM_AD, ack_cnt > 0.";
         pcnt :=  pcnt + msg.ack_cnt;
         if pcnt = 0 then
           pstate := Proc_M;
+          LastWrite := pvalue;
         else
           pstate := Proc_SM_A;
         endif;
       endif;
-      pvalue := msg.value;
     case InvAck:
       -- assert (pcnt = 0) "error at Proc_SM_AD, ack_cnt == 0.";
       pcnt := pcnt - 1;
@@ -488,6 +489,7 @@ Begin
       pcnt := pcnt - 1;
       if pcnt = 0 then
         pstate := Proc_M;
+        LastWrite := pvalue;
       endif;
     else
       ErrorUnhandledMsg(msg, p);
@@ -579,19 +581,25 @@ ruleset n: Proc Do
       p.state := Proc_SI_A;
     endrule;
 
-    rule "S ==(store)==> M"
-      p.state = Proc_S
-    ==>
-      Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
-      p.state := Proc_SM_AD;
-    endrule;
+    ruleset v: Value Do
+      rule "S ==(store)==> M"
+        p.state = Proc_S
+      ==>
+        p.value := v;      
+        Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
+        p.state := Proc_SM_AD;
+      endrule;
+    endruleset;
 
-    rule "I ==(store)==> M"
-      p.state = Proc_I
-    ==>
-      Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
-      p.state := Proc_IM_AD;
-    endrule;
+    ruleset v: Value Do
+      rule "I ==(store)==> M"
+        p.state = Proc_I
+      ==>
+        p.value := v;      
+        Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
+        p.state := Proc_IM_AD;
+      endrule;
+    endruleset;
 
     rule "I ==(load)==> S"
       p.state = Proc_I 
