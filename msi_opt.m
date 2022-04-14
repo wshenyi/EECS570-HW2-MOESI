@@ -7,7 +7,7 @@
 ----------------------------------------------------------------------
 const
   ProcCount: 3;          -- number processors
-  ValueCount: 3;         -- number of data values.
+  ValueCount: 2;         -- number of data values.
   NumVCs: 4;             -- number of virtual channels
   RequestChannel: 0;     -- virtual channel #0
 	ForwardChannel: 1;     -- virtual channel #1
@@ -351,7 +351,6 @@ Begin
     case PutM:
       if DirNode.owner = msg.src then
         DirNode.value := msg.value;
-        LastWrite := DirNode.value;
         DirNode.owner := Directory;
         DirNode.state := Dir_I;
       endif;
@@ -359,7 +358,6 @@ Begin
     case PutO:
       if DirNode.owner = msg.src then
         DirNode.value := msg.value;
-        LastWrite := DirNode.value;
         DirNode.owner := Directory;
         DirNode.state := Dir_I;
       endif;
@@ -379,7 +377,7 @@ Begin
     switch msg.mtype
     case GetS:
       assert IsSharer(DirNode.owner) "Error at Dir_O: owner is not a sharer.";
-      DirNode.state := Dir_OX_D; -- TODO
+      DirNode.state := Dir_OX_D;
       Send(FwdGetS, DirNode.owner, Directory, ForwardChannel, UNDEFINED, msg.src, 0);
       AddToSharersList(msg.src);
 		case GetM:
@@ -391,7 +389,6 @@ Begin
             DirNode.state := Dir_OM_AA;
             DirNode.ack_cnt := cnt - 1;
             SaveSharersListToLocal(msg.src);
-            -- SendInvReqToSharers(msg.src);
           endif;
           Send(FwdGetM, DirNode.owner, Directory, ForwardChannel, UNDEFINED, msg.src, cnt - 1);
         else -- GetM from S state
@@ -430,14 +427,12 @@ Begin
       if IsSharerListEmpty() then
         DirNode.state := Dir_I;
         DirNode.owner := Directory;
+        DirNode.value := msg.value;
       else
         if DirNode.owner = msg.src then
           DirNode.value := msg.value;
-          LastWrite := DirNode.value;
           DirNode.state := Dir_S;
           DirNode.owner := Directory;
-        else
-          DirNode.state := Dir_O;
         endif;
       endif;
     case PutE:
@@ -460,14 +455,12 @@ Begin
       if IsSharerListEmpty() then
         DirNode.state := Dir_I;
         DirNode.owner := Directory;
+        DirNode.value := msg.value;
       else
         if DirNode.owner = msg.src then
-          DirNode.value := msg.value;
-          LastWrite := DirNode.value;
           DirNode.state := Dir_S;
           DirNode.owner := Directory;
-        else
-          DirNode.state := Dir_O;
+          DirNode.value := msg.value;
         endif;
       endif;
 		else
@@ -490,7 +483,6 @@ Begin
     case PutM:
       if DirNode.owner = msg.src then
         DirNode.value := msg.value;
-        LastWrite := DirNode.value;
         DirNode.owner := Directory;
         DirNode.state := Dir_I;
       endif;
@@ -499,6 +491,7 @@ Begin
       assert (msg.src != DirNode.owner) "error at Dir_M: PutE from owner";
       Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);
     case PutO:
+      -- DirNode.value := msg.value;
       assert (msg.src != DirNode.owner) "error at Dir_M: PutO from owner"; 
       Send(PutAck, msg.src, Directory, ResponseChannel, UNDEFINED, UNDEFINED, 0);
     else
@@ -526,12 +519,9 @@ Begin
         DirNode.state := Dir_O;
         AddToSharersList(DirNode.owner);
       endif;
-      -- DirNode.value := msg.value;
-      -- LastWrite := DirNode.value;
     case FwdGetMAck:
-      DirNode.state := Dir_M; -- TODO
+      DirNode.state := Dir_M;
       DirNode.value := msg.value;
-      LastWrite := DirNode.value;
       undefine DirNode.sharers;
     else
       ErrorUnhandledMsg(msg, Directory);
@@ -741,9 +731,6 @@ Begin
     switch msg.mtype
     case Inv:
       msg_processed := false;
-      -- pstate := Proc_ISI_D;
-      -- Send(InvAck, msg.fwd_to,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
-      -- Send(InvAck, Directory, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
     case FwdGetS:
       msg_processed := false;
     case FwdGetM:
@@ -767,18 +754,18 @@ Begin
       msg_processed := false;
     case AckCnt:
       msg_processed := false;
-      -- pcnt := pcnt + msg.ack_cnt;
-      -- pstate := Proc_IM_A;
     case Data:
       if msg.src = Directory then -- data is from directory controller
         if msg.ack_cnt = 0 then
           pstate := Proc_M;
+          LastWrite := pvalue;
           undefine Procs[p].sharers;
         else
           assert (pcnt <= 0) "error at Proc_IM_AD, ack_cnt > 0.";
           pcnt :=  pcnt + msg.ack_cnt;
           if pcnt = 0 then
             pstate := Proc_M;
+            LastWrite := pvalue;
             undefine Procs[p].sharers;
           else
             pstate := Proc_IM_A;
@@ -787,15 +774,15 @@ Begin
       else -- data is from previous owner
         if IsLocalSharerListEmpty(p) then
           pstate := Proc_M;
+          LastWrite := pvalue;
           undefine Procs[p].sharers;
         else
           pstate := Proc_IM_A;
         endif;
+        -- pvalue := msg.value;
       endif;
-      pvalue := msg.value;
     case InvAck:
       msg_processed := false;
-      -- pcnt := pcnt - 1;
     else
       ErrorUnhandledMsg(msg, p);
     endswitch;
@@ -815,12 +802,14 @@ Begin
       pcnt := pcnt + msg.ack_cnt;
       if pcnt = 0 then
         pstate := Proc_M;
+        LastWrite := pvalue;
         undefine Procs[p].sharers;
       endif;
     case InvAck:
       pcnt := pcnt - 1;
       if pcnt = 0 then
         pstate := Proc_M;
+        LastWrite := pvalue;
         undefine Procs[p].sharers;
       endif;
     else
@@ -850,18 +839,18 @@ Begin
       msg_processed := false;
     case AckCnt:
       msg_processed := false;
-      -- pcnt := pcnt + msg.ack_cnt;
-      -- pstate := Proc_SM_A;
     case Data:
       if msg.src = Directory then
         if msg.ack_cnt = 0 then
           pstate := Proc_M;
+          LastWrite := pvalue;
           undefine Procs[p].sharers;
         else
           assert (pcnt <= 0) "error at Proc_SM_AD, ack_cnt > 0.";
           pcnt :=  pcnt + msg.ack_cnt;
           if pcnt = 0 then
             pstate := Proc_M;
+            LastWrite := pvalue;
             undefine Procs[p].sharers;
           else
             pstate := Proc_SM_A;
@@ -870,15 +859,15 @@ Begin
       else
         if IsLocalSharerListEmpty(p) then
           pstate := Proc_M;
+          LastWrite := pvalue;
           undefine Procs[p].sharers;
         else
           pstate := Proc_SM_A;
         endif;
+        -- pvalue := msg.value;
       endif;
-      pvalue := msg.value;
     case InvAck:
       msg_processed := false;
-      -- pcnt := pcnt - 1;
     else
       ErrorUnhandledMsg(msg, p);
     endswitch;
@@ -893,12 +882,14 @@ Begin
       pcnt := pcnt + msg.ack_cnt;
       if pcnt = 0 then
         pstate := Proc_M;
+        LastWrite := pvalue;
         undefine Procs[p].sharers;
       endif;
     case InvAck:
       pcnt := pcnt - 1;
       if pcnt = 0 then
         pstate := Proc_M;
+        LastWrite := pvalue;
         undefine Procs[p].sharers;
       endif;
     else
@@ -915,6 +906,7 @@ Begin
         pcnt   := pcnt + msg.ack_cnt;
         if pcnt = 0 then
           pstate := Proc_M;
+          LastWrite := pvalue;
           undefine Procs[p].sharers;
         else
           pstate := Proc_OM_A;
@@ -944,6 +936,7 @@ Begin
       pcnt := pcnt - 1;
       if pcnt = 0 then
         pstate := Proc_M;
+        LastWrite := pvalue;
         undefine Procs[p].sharers;
       endif;
     else
@@ -960,6 +953,7 @@ Begin
         pcnt := pcnt + msg.ack_cnt;
         if pcnt = 0 then 
           pstate := Proc_M;
+          LastWrite := pvalue;
           undefine Procs[p].sharers;
         else
           pstate := Proc_OM_A;
@@ -974,12 +968,14 @@ Begin
       pcnt := pcnt + msg.ack_cnt;
       if pcnt = 0 then
         pstate := Proc_M;
+        LastWrite := pvalue;
         undefine Procs[p].sharers;
       endif;
     case InvAck:
       pcnt := pcnt - 1;
       if pcnt = 0 then
         pstate := Proc_M;
+        LastWrite := pvalue;
         undefine Procs[p].sharers;
       endif;
     else
@@ -1096,10 +1092,8 @@ Begin
   case Proc_II_A:
     switch msg.mtype
     case Inv:
-      -- pstate := Proc_I;
       Send(InvAck, msg.fwd_to,  p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
       Send(InvAck, Directory, p, ResponseChannel, UNDEFINED, UNDEFINED, 0);
-      -- undefine pvalue;
     case PutAck:
       pstate := Proc_I;
       undefine pvalue;
@@ -1132,12 +1126,23 @@ ruleset n: Proc Do
       p.state := Proc_MI_A;
     endrule;
 
-    rule "O ==(store)==> M"
-      p.state = Proc_O
-    ==>
-      Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
-      p.state := Proc_OM_AC;
-    endrule;
+    -- rule "O ==(store)==> M"
+    --   p.state = Proc_O
+    -- ==>
+    --   Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
+    --   p.state := Proc_OM_AC;
+    -- endrule;
+
+    ruleset v:Value Do
+      rule "O ==(store)==> M"
+        p.state = Proc_O
+      ==>
+        p.value := v;
+        -- LastWrite := v; 
+        Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
+        p.state := Proc_OM_AC;
+      endrule;
+    endruleset;
 
     rule "O ==(evict)==> I"
       p.state = Proc_O
@@ -1146,12 +1151,22 @@ ruleset n: Proc Do
       p.state := Proc_OI_A;
     endrule;
 
-    rule "E ==(store)==> M"
-      p.state = Proc_E
-    ==>
-      Send(GetM, Directory, n, RequestChannel, p.value, n, 0);
-      p.state := Proc_EM_A;
-    endrule;
+    -- rule "E ==(store)==> M"
+    --   p.state = Proc_E
+    -- ==>
+    --   Send(GetM, Directory, n, RequestChannel, p.value, n, 0);
+    --   p.state := Proc_EM_A;
+    -- endrule;
+
+    ruleset v:Value Do
+      rule "E ==(store)==> M"
+        p.state = Proc_E
+      ==>
+        p.value := v;      
+        Send(GetM, Directory, n, RequestChannel, p.value, n, 0);
+        p.state := Proc_EM_A;
+      endrule;
+    endruleset;
 
     rule "E ==(evict)==> I"
       p.state = Proc_E
@@ -1167,19 +1182,39 @@ ruleset n: Proc Do
       p.state := Proc_SI_A;
     endrule;
 
-    rule "S ==(store)==> M"
-      p.state = Proc_S
-    ==>
-      Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
-      p.state := Proc_SM_AD;
-    endrule;
+    ruleset v:Value Do
+      rule "S ==(store)==> M"
+        p.state = Proc_S
+      ==>
+        p.value := v;      
+        Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
+        p.state := Proc_SM_AD;
+      endrule;
+    endruleset;
 
-    rule "I ==(store)==> M"
-      p.state = Proc_I
-    ==>
-      Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
-      p.state := Proc_IM_AD;
-    endrule;
+    ruleset v:Value Do
+      rule "I ==(store)==> M"
+        p.state = Proc_I
+      ==>
+        p.value := v;      
+        Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
+        p.state := Proc_IM_AD;
+      endrule;
+    endruleset;
+
+    -- rule "S ==(store)==> M"
+    --   p.state = Proc_S
+    -- ==>
+    --   Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
+    --   p.state := Proc_SM_AD;
+    -- endrule;
+
+    -- rule "I ==(store)==> M"
+    --   p.state = Proc_I
+    -- ==>
+    --   Send(GetM, Directory, n, RequestChannel, UNDEFINED, UNDEFINED, 0);
+    --   p.state := Proc_IM_AD;
+    -- endrule;
 
     rule "I ==(load)==> S/E"
       p.state = Proc_I 
@@ -1316,25 +1351,25 @@ invariant "Processor in I state implies the value is undefined"
 
 -- @@@ Begin Mandatory Invariants
 -- Coherence
-invariant "Values in memory matches value of last write, when shared or invalid"
+invariant "Values in memory matches value of last write, when in E/S/I state"
   Forall n : Proc Do	
-    (DirNode.state = Dir_S | DirNode.state = Dir_I)
+    (DirNode.state = Dir_E |DirNode.state = Dir_S | DirNode.state = Dir_I)
       ->
 			  DirNode.value = LastWrite
 	end;
 
-invariant "Processors in a valid state (S or M) match last write"
+invariant "Processors in a valid state (M/O/E) match last write"
   Forall n : Proc Do 
-    (Procs[n].state = Proc_S | Procs[n].state = Proc_M)
+    (Procs[n].state = Proc_E | Procs[n].state = Proc_O | Procs[n].state = Proc_M)
       ->
         Procs[n].value = LastWrite -- LastWrite is updated whenever a new value is written 
  end;
 
 -- Single Writer Multiple Reader
-invariant "If processor is in Modified state, there are no Sharers"
+invariant "If processor is in M/E state, there are no Sharers"
   Forall n : Proc Do
     Forall m : Proc Do
-      ((Procs[n].state = Proc_M) & (n != m)) 
+      ((Procs[n].state = Proc_M | Procs[n].state = Proc_E) & (n != m)) 
         -> 
           (Procs[m].state != Proc_S & Procs[m].state != Proc_M)
     end

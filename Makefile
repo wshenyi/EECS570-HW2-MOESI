@@ -40,7 +40,7 @@ FILENAME = msi
 
 # choice of compiler (with REQUIRED options)
 #CXX = g++ #                                 # for beet, elaines, dawns, cabbage
-CXX = g++ -DCATCH_DIV #                   # for elaines
+CXX = g++-4.8 -DCATCH_DIV #                   # for elaines
 #CXX = OCC +d #                              # for beet
 #CXX = DCC #                                 # for beet
 
