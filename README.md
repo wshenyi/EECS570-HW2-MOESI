@@ -5,7 +5,7 @@ The key idea to solve race between Get and Put message at directory (homenode) i
 
 ## How to run
 
-Just run `make` command will get `msi.out` and `msi_opt.out`
+Just run `make` command and you will get `msi.out` and `msi_opt.out`
 
 ## Directory State Transition
 
@@ -15,7 +15,7 @@ Just run `make` command will get `msi.out` and `msi_opt.out`
 
 ## Processor State Transition
 
-* The dotted line represent a active state transition -- the processor **send** a message and transfer to a next state.
+* The dotted line represent an active state transition -- the processor **send** a message and transfer to a next state.
 * The solid line represent a passive state transition -- the processor **receive** a message and transfer to a next state.
 
 ![Processor State Transition](pic/EECS%20570%20HW2-Page-2.png)
